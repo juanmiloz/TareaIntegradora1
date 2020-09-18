@@ -1,0 +1,201 @@
+package model;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+
+public class MyFastFood{
+	
+	private ArrayList<Restaurant> restaurants;
+	private ArrayList<Client> clients;
+	private ArrayList<Order> orders;
+	
+	public MyFastFood() {
+		restaurants = new ArrayList<Restaurant>();
+		clients = new ArrayList<Client>();
+		orders = new ArrayList<Order>();
+	}
+	
+	public List<Restaurant> getRestaurants(){
+		return restaurants;
+	}
+	
+	public List<Client> getClients(){
+		return clients;
+	}
+	
+	public List<Order> getOrder(){
+		return orders; 
+	}
+	
+	public String getInfoRestaurants() {
+		String infoRestaurants;
+		
+		if(restaurants.isEmpty() == false) {
+			infoRestaurants = "\nLOS RESTAURANTES EXISTENTES SON:\n";
+			for(int i = 0; i < restaurants.size(); i++) {
+				String nameRestaurant = restaurants.get(i).getName();
+				String nit = restaurants.get(i).getNit();
+				infoRestaurants += (i+1) + ") " + nameRestaurant + " - " + nit + "\n"; 
+			}
+		}else{
+			infoRestaurants = "No hay restaurantes disponibles";
+		}
+		return infoRestaurants;
+	}
+	
+	public String getInfoProductsOfRestaurant(int num) {
+		String infoProducts;		
+		if(restaurants.get(num-1).getProducts().isEmpty() == false) {
+			infoProducts = "\nLOS PRODUCTOS DEL RESTAURANTE SON:\n";
+			for(int i = 0; i < restaurants.get(num-1).getProducts().size(); i++) {
+				String nameProduct = restaurants.get(num-1).getProducts().get(i).getName();
+				String nitProduct = restaurants.get(num-1).getProducts().get(i).getNitRestaurant();
+				infoProducts += (i+1) + ") " + nameProduct + " - " + nitProduct + "\n"; 
+			}
+		}else{
+			infoProducts = "No hay productos disponibles en el restaurante";
+		}
+		return infoProducts;
+	}
+	
+	/*prueba*/
+	public String getInfoClients() {
+		String infoClients;
+		if(clients.isEmpty() == false) {
+			infoClients = "\nLOS CLIENTES INGRESADOS SON:\n";
+			for(int i = 0; i < clients.size(); i++) {
+				infoClients += "\n======================================" + "\n-Cliente numero " + (i+1) + "\n";
+				infoClients += clients.get(i).toString(); 
+			}
+		}else{
+			infoClients = "No hay clientes ingresados";
+		}
+		return infoClients;
+	}
+	
+	public String getInfoRestaurantsAndProducts() {
+		String infoRestaurants;
+		
+		if(restaurants.isEmpty() == false) {
+			infoRestaurants = "LOS RESTAURANTES EXISTENTES SON:\n";
+			for(int i = 0; i < restaurants.size(); i++) {
+				String nameRestaurant = restaurants.get(i).getName();
+				String nit = restaurants.get(i).getNit();
+				infoRestaurants += (i+1) + ") " + nameRestaurant + " - " + nit;
+				infoRestaurants += "==========================\nSus productos son:\n" + restaurants.get(i).getInfoProduct();
+			}
+		}else{
+			infoRestaurants = "No hay restaurantes disponibles";
+		}
+		return infoRestaurants;
+	}
+	
+	
+	public void addNewRestaurant(String nameRestaurant, String nit, String nameAdministrator) {
+		Restaurant newRestaurant = new Restaurant(nameRestaurant, nit, nameAdministrator);
+		restaurants.add(newRestaurant);
+	}
+	
+	public void addNewProduct(int numRestaurant, Product newProduct) {
+		restaurants.get(numRestaurant-1).addProduct(newProduct);
+	}
+	
+	public void addNewClient(String document, String numberIdentification, String lastName ,String name , String phone, String adress) {
+		Client newClient = new Client(document, numberIdentification ,lastName ,name ,phone ,adress);
+		if(clients.isEmpty()) {
+			clients.add(newClient);
+		}else {
+			int i = 0;
+			while(clients.get(i).compareTo(newClient) > 0) {
+				i++;
+			}
+			clients.add(i, newClient);
+		}
+	}
+	
+	public void addNewOrder(String code, Date date, String codeClient, String nitRestaurant) {
+		Order newOrder = new Order(code,date,codeClient,nitRestaurant);
+		orders.add(newOrder);
+	}
+	
+	public String assignDocument(int numberTypeDocument) {
+		String document = "";
+		switch(numberTypeDocument){
+			case 1: 
+				document = "Tarjeta de identidad"; 
+			break;
+			case 2:
+				document = "Cedula de ciudadania";
+			break;
+			case 3:
+				document = "Pasaporte";
+			break;
+			case 4:
+				document = "Cedula extranjera";
+			break;
+		}
+		return document;
+	}
+	
+	public int numRam() {
+		Random random = new Random();
+		int low = 100000, high = 999999;
+		int randomNumber = random.nextInt(high-low)+low;
+		return randomNumber;
+	}
+	
+	public String assingIdentificationClientToOrder(int num) {
+		String numIdentification = clients.get(num-1).getNumberIdentification();
+		return numIdentification;
+	}
+	
+	public String assignNit(int numRestaurant) {
+		String nit;
+		nit = restaurants.get(numRestaurant-1).getNit();
+		return nit;
+	} 
+	
+	public boolean codeValid(String numero) {
+		boolean repeat = false;
+		for(int i = 0; i < orders.size(); i++) {
+			if(numero.equalsIgnoreCase(orders.get(i).getCode())) {
+				repeat = true;
+			}
+		}
+		return repeat;
+	}
+	
+	public String assingNitRestaurantToOrder(int num) {
+		String nitRestaurant = restaurants.get(num-1).getNit();
+		return nitRestaurant;
+	}
+	
+	public String assingCodeProductToOrder(int num, int num2) {
+		String infoProduct = restaurants.get(num-1).getProducts().get(num2-1).getCode();
+		return infoProduct;
+	}
+	
+	public String assingNameProductToOrder(int numRestaurant, int numProduct) {
+		String nameProduct = restaurants.get(numRestaurant-1).getProducts().get(numProduct-1).getName();
+		return nameProduct;
+	}
+	
+	public void addProductsToOrder(String codeOrder, String nameProduct, String quantity) {
+		int i = 0;
+		while(!getOrder().get(i).getCode().equalsIgnoreCase(codeOrder)) {
+			i++;
+		}
+		String productToAdded [] = {nameProduct, quantity};
+		getOrder().get(i).addProducts(productToAdded);
+	}
+
+	/*
+	public String getInfoRestaurants2() {
+		String infoRestaurants = "Los restaurantes disponibles son: ";
+		for(int i = 0; i<restaurants.size(); i++) {
+			infoRestaurants += "\n" + (i+1) + ")" + restaurants.get(i).toString();
+		}
+		return infoRestaurants;
+	}*/
+}
