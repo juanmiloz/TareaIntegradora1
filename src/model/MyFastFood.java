@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import exceptions.NitRestaurantNotExistException;
+import exceptions.DocumentClientNotExistException;
 
 public class MyFastFood{
 	
@@ -196,6 +198,20 @@ public class MyFastFood{
 		getOrder().get(i).addProducts(productToAdded);
 	}
 	
+	/*metodos utilizados para upgrate*/
+	
+	public void confirmNit(String nit) throws NitRestaurantNotExistException {
+		boolean exist = false;
+		for(int i = 0; i < restaurants.size(); i++) {
+			if(restaurants.get(i).getNit().equalsIgnoreCase(nit)) {
+				exist = true; 
+			}
+		}
+		if(exist == false) {
+			throw new NitRestaurantNotExistException();
+		}
+	}
+	
 	public int getPosRestaurant(String nit) {
 		int posRestaurant;
 		int i = 0;
@@ -204,6 +220,28 @@ public class MyFastFood{
 		}
 		posRestaurant = i;
 		return posRestaurant;
+	}
+	
+	public void comfirmNumberIdentity(String numberDocument) throws DocumentClientNotExistException{
+		boolean exist = false;
+		for(int i = 0; i < clients.size(); i++) {
+			if(clients.get(i).getNumberIdentification().equalsIgnoreCase(numberDocument)) {
+				exist = true;
+			}
+		}
+		if(exist == false) {
+			throw new DocumentClientNotExistException();
+		}
+	}
+	
+	public int getPosClient(String numberDocument) {
+		int posClient;
+		int i = 0;
+		while(!clients.get(i).getNumberIdentification().equalsIgnoreCase(numberDocument)) {
+			i++;
+		}
+		posClient = i;
+		return posClient;
 	}
 	
 }
