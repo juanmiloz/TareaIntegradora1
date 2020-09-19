@@ -61,11 +61,16 @@ public class Order {
 		return productsAndQuantity;
 	}
 	
+	public ArrayList<String[]> getProductsOrder(){
+		return productsOrder;
+	}
+	
 	public String toString() {
-		String infoOrder = "Codigo de orden: " + code + "\nFecha de pedido: " + date + "\nNumero de identidad del cliente: " + codeClient;
-		infoOrder += "Codigo del restaurante: " + nitRestaurant;
+		String infoOrder = "\nCodigo de orden: " + code + "\nFecha de pedido: " + date + "\nNumero de identidad del cliente: " + codeClient;
+		infoOrder += "\nCodigo del restaurante: " + nitRestaurant;
 		for(int i = 0; i < productsOrder.size();i++) {
-			infoOrder += productsOrder.get(i).toString();
+			String temp[] = productsOrder.get(i);
+			infoOrder += "\nProducto a llevar numero: " + (i+1) + "\nnombre: " + temp[0] + " cantidad: " + temp[1] + "\n";
 		}
 		return infoOrder; 
 	}

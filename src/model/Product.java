@@ -55,4 +55,10 @@ public class Product {
 	public String getNitRestaurant() {
 		return nitRestaurant; 
 	}
+	
+	public String toString() {
+		String infoProduct = "Codigo Producto: " + code + "\nNombre Producto: " + name + "\nDescripcion producto: " + description;
+		infoProduct += "\nCosto: " + cost +"\nNit Restaurante: " + nitRestaurant + "\n";
+		return infoProduct;
+	}
 }

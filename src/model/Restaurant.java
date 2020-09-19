@@ -48,18 +48,17 @@ public class Restaurant {
 		products.add(newProduct);
 	}
 	
-	/*Prueba*/
-	public String getInfoProduct() {
-		String infoProducts = "";
-		for(int i = 0; i < products.size(); i++) {
-			infoProducts = "	"+ (i+1) + "<--" + products.get(i).getName() + " - " + products.get(i).getCost() + "\n";
+	public String getInfoProducts() {
+		String infoProducts = "		\nLos productos del restaurante son:\n";
+		for(int i = 0; i <products.size();i++) {
+			infoProducts += "Producto numero " + (i+1) + "\n" + products.get(i).toString();
 		}
 		return infoProducts;
 	}
 	
 	public String toString() {
 		String infoRestaurant;
-		infoRestaurant = "Nombre: " + getName() + " Nit: " + getNit() + "Administrador: " + getNameAdministraitor();
+		infoRestaurant = "Nombre: " + getName() + "\nNit: " + getNit() + "\nAdministrador: " + getNameAdministraitor() + "\n";
 		return infoRestaurant;
 	}
 }

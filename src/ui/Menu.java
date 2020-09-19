@@ -3,7 +3,6 @@ import model.*;
 import java.util.Scanner;
 import java.util.Date;
 import java.util.InputMismatchException;
-import java.util.Random;
 import java.lang.NumberFormatException;
 import java.lang.IndexOutOfBoundsException;
 
@@ -170,8 +169,8 @@ public class Menu {
 			System.out.println(infoProducts);
 			System.out.println("Cuantos productos desea llevar");
 			int numOfProductsToOrder = Integer.parseInt(in.nextLine());
+			myFastFood.addNewOrder(numRamdom, date, idClient, nitRestaurant);
 			for(int i = 0; i < numOfProductsToOrder; i++) {
-				myFastFood.addNewOrder(numRamdom, date, idClient, nitRestaurant);
 				System.out.println("Ingrese el numero del producto el cual desea llevar");
 				int numProduct = Integer.parseInt(in.nextLine());
 				String nameProduct = myFastFood.assingNameProductToOrder(x, numProduct);
@@ -214,9 +213,42 @@ public class Menu {
 	}
 	
 	public void upgrateDataRestaurant() {
-		System.out.println("Ingrese el nit del restaurante que desea actualizar");
-		String nitRestaurant = in.nextLine();
-		int numPosRestaurant;
+		if(!myFastFood.getInfoRestaurants().isEmpty()) {
+			String infoRestaurant = myFastFood.getInfoRestaurants();
+			System.out.println( infoRestaurant + "\nIngrese el nit del restaurante que desea actualizar");
+			String nitRestaurant = in.nextLine();
+			int numPositionRestaurant = myFastFood.getPosRestaurant(nitRestaurant);
+			System.out.println("Que desea actualizar?");
+			System.out.println("(1)<---Nombre restaurante\n(2)<---Nombre administrador");
+			int optionUpgrade = Integer.parseInt(in.nextLine());
+			switch(optionUpgrade){
+				case 1:
+					upgrateNameRestaurant(numPositionRestaurant);
+				break;
+				
+				case 2: 
+					upgrateNameAdministratorRestaurant(numPositionRestaurant);
+				break;
+				
+				default:
+					System.out.println("Debe ingresar una opcion valida");
+				break;
+			}
+		}else {
+			System.out.println("No hay restaurantes en el sistema");
+		}		
+	}
+	
+	public void upgrateNameRestaurant(int posRestaurant) {
+		System.out.println("Ingrese el nuevo nombre del restaurante");
+		String newName = in.nextLine();
+		myFastFood.getRestaurants().get(posRestaurant).setName(newName);
+	}
+	
+	public void upgrateNameAdministratorRestaurant(int posRestaurant) {
+		System.out.println("Ingrese el nuevo nombre del administrador del restaurante");
+		String newNameAdministrator = in.nextLine();
+		myFastFood.getRestaurants().get(posRestaurant).setNameAdministraitor(newNameAdministrator);
 	}
 	
 	public void upgrateDataProduct() {
@@ -226,13 +258,15 @@ public class Menu {
 	}
 	
 	public void upgrateDataClient() {
-		System.out.println("Ingrese el numero del documento que desea actualizar");
+		String infoClient = myFastFood.getInfoClients();
+		System.out.println( infoClient + "\nIngrese el numero del documento del cliente que desea actualizar");
 		String numberDocument = in.nextLine();
 		int numPosClient;
 	}
 	
 	public void upgrateDataOrder() {
-		System.out.println("Ingrese el codigo de la orden que desea actualizar");
+		String infoOrder = myFastFood.getInfoOrder();
+		System.out.println( infoOrder + "\nIngrese el codigo de la orden que desea actualizar");
 		String codeOrder = in.nextLine();
 		int numPosOrder;
 	}
@@ -246,6 +280,7 @@ public class Menu {
 		String todaInfo;
 		todaInfo = myFastFood.getInfoRestaurantsAndProducts();
 		todaInfo += "\n" + myFastFood.getInfoClients();
+		todaInfo += "\n" + myFastFood.getInfoOrder();
 		System.out.println(todaInfo);
 	}
 }

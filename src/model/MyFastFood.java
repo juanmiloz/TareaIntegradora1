@@ -28,20 +28,35 @@ public class MyFastFood{
 		return orders; 
 	}
 	
-	public String getInfoRestaurants() {
-		String infoRestaurants;
-		
-		if(restaurants.isEmpty() == false) {
-			infoRestaurants = "\nLOS RESTAURANTES EXISTENTES SON:\n";
-			for(int i = 0; i < restaurants.size(); i++) {
-				String nameRestaurant = restaurants.get(i).getName();
-				String nit = restaurants.get(i).getNit();
-				infoRestaurants += (i+1) + ") " + nameRestaurant + " - " + nit + "\n"; 
+	public String getInfoRestaurants(){
+		String infoRestaurant;
+		if(!restaurants.isEmpty()) {
+			infoRestaurant = "LOS RESTAURANTES INGRESADOS EN LOS DATOS SON:\n";
+			for(int i = 0; i<restaurants.size(); i++) {
+				infoRestaurant += "-Restaurante #" + (i+1) + "\n" + restaurants.get(i).toString() + "\n";
 			}
-		}else{
-			infoRestaurants = "No hay restaurantes disponibles";
+		}else {
+			infoRestaurant = "No hay restaurantes ingresados en el sistema";
 		}
-		return infoRestaurants;
+		return infoRestaurant;
+	}
+	
+	public String getInfoRestaurantsAndProducts() {
+		String infoRestaurantWithProducts;
+		if(!restaurants.isEmpty()) {
+			infoRestaurantWithProducts = "LOS RESTAURANTES INGRESADOS EN LOS DATOS SON:\n";
+			for(int i = 0; i<restaurants.size(); i++) {
+				infoRestaurantWithProducts += "\n-Restaurante #" + (i+1) + "\n" + restaurants.get(i).toString();
+				if(!restaurants.get(i).getProducts().isEmpty()) {
+					infoRestaurantWithProducts += restaurants.get(i).getInfoProducts();
+				}else {
+					infoRestaurantWithProducts += "Este restaurante no posee productos"; 
+				}
+			}
+		}else {
+			infoRestaurantWithProducts = "No hay restaurantes ingresados en el sistema";
+		}
+		return infoRestaurantWithProducts;
 	}
 	
 	public String getInfoProductsOfRestaurant(int num) {
@@ -74,23 +89,14 @@ public class MyFastFood{
 		return infoClients;
 	}
 	
-	public String getInfoRestaurantsAndProducts() {
-		String infoRestaurants;
-		
-		if(restaurants.isEmpty() == false) {
-			infoRestaurants = "LOS RESTAURANTES EXISTENTES SON:\n";
-			for(int i = 0; i < restaurants.size(); i++) {
-				String nameRestaurant = restaurants.get(i).getName();
-				String nit = restaurants.get(i).getNit();
-				infoRestaurants += (i+1) + ") " + nameRestaurant + " - " + nit;
-				infoRestaurants += "==========================\nSus productos son:\n" + restaurants.get(i).getInfoProduct();
-			}
-		}else{
-			infoRestaurants = "No hay restaurantes disponibles";
+	public String getInfoOrder() {
+		String infoOrder = "\nLAS ORDENES EN TRANSCURSO SON:\n";
+		for(int i = 0; i < orders.size();i++) {
+			infoOrder += "\nOrden numero = " + (i+1) + "\n";
+			infoOrder += orders.get(i).toString();
 		}
-		return infoRestaurants;
+		return infoOrder;
 	}
-	
 	
 	public void addNewRestaurant(String nameRestaurant, String nit, String nameAdministrator) {
 		Restaurant newRestaurant = new Restaurant(nameRestaurant, nit, nameAdministrator);
@@ -189,13 +195,15 @@ public class MyFastFood{
 		String productToAdded [] = {nameProduct, quantity};
 		getOrder().get(i).addProducts(productToAdded);
 	}
-
-	/*
-	public String getInfoRestaurants2() {
-		String infoRestaurants = "Los restaurantes disponibles son: ";
-		for(int i = 0; i<restaurants.size(); i++) {
-			infoRestaurants += "\n" + (i+1) + ")" + restaurants.get(i).toString();
+	
+	public int getPosRestaurant(String nit) {
+		int posRestaurant;
+		int i = 0;
+		while(!restaurants.get(i).getNit().equalsIgnoreCase(nit)) {
+			i++;
 		}
-		return infoRestaurants;
-	}*/
+		posRestaurant = i;
+		return posRestaurant;
+	}
+	
 }
