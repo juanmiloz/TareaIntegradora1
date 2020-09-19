@@ -7,6 +7,6 @@ public class CodeProductNotExistException extends Exception{
 	private static final long serialVersionUID = 1L;
 
 	public CodeProductNotExistException() {
-		super("The code entered not exist");
+		super("The code of the product entered not exist");
 	}
 }

@@ -6,6 +6,7 @@ import java.util.InputMismatchException;
 import java.lang.NumberFormatException;
 import java.lang.IndexOutOfBoundsException;
 import exceptions.NitRestaurantNotExistException;
+import exceptions.CodeProductNotExistException;
 import exceptions.DocumentClientNotExistException;
 import exceptions.CodeOrderNotExistException;
 
@@ -259,16 +260,62 @@ public class Menu {
 		myFastFood.getRestaurants().get(posRestaurant).setNameAdministraitor(newNameAdministrator);
 	}
 	
-	/*
 	public void upgrateDataProduct() {
-		if(!myFastFood.getOrder().isEmpty()) {
-			System.out.println("Ingrese el codigo del producto que desea actualizar");
-			String codeProduct = in.nextLine();
-			int numPosProduct;
-		}else {
-			System.out.println("No hay productos ingresados en el sistema");
+		try{
+			if(!myFastFood.getOrder().isEmpty()) {
+				String infoRestaurants = myFastFood.getInfoRestaurants();
+				System.out.println(infoRestaurants + "\nIngrese en que restaurante se encuentra el producto que desea actualizar");
+				int numRestaurant = Integer.parseInt(in.nextLine());
+				String infoProductsOfRestaurant = myFastFood.getInfoProductsOfRestaurant(numRestaurant);
+				System.out.println(infoProductsOfRestaurant + "\nIngrese el codigo del producto que desea actualizar");
+				String codeProduct = in.nextLine();
+				myFastFood.confirmCodeProduct(codeProduct, (numRestaurant-1));
+				int numPosProduct = myFastFood.getPosProduct(codeProduct, numRestaurant);
+				System.out.println("Que desea actualizar");
+				System.out.println("(1)<---Nombre del producto\n(2)<---Descripcion del producto\n(3)<---Costo del producto");
+				int optionProduct = Integer.parseInt(in.nextLine());
+				switch(optionProduct) {
+					case 1:
+						upgrateNameProduct(numPosProduct, numRestaurant);
+					break;
+					
+					case 2:
+						upgrateDescriptionProduct(numPosProduct, numRestaurant);
+					break;
+					
+					case 3:
+						upgrateDescriptionProduct(numPosProduct, numRestaurant);
+					break;
+					
+					default:
+						System.out.println("Debe ingresar una opcion valida");
+					break;
+				}
+			}else {
+				System.out.println("No hay productos ingresados en el sistema");
+			}
+		}catch(CodeProductNotExistException cpde) {
+			System.err.println("El codigo del producto ingresado no existe");
 		}
-	}*/
+	}
+	
+	public void upgrateNameProduct(int posProduct, int numRestaurant) {
+		System.out.println("Ingrese el nuevo nombre del producto");
+		String newNameProduct = in.nextLine();
+		myFastFood.getRestaurants().get(numRestaurant).getProducts().get(posProduct).setName(newNameProduct);
+	}
+	
+	public void upgrateDescriptionProduct(int posProduct, int numRestaurant) {
+		System.out.println("Ingrese la nueva descripcion del producto");
+		String newDescriptionProduct = in.nextLine();
+		myFastFood.getRestaurants().get(numRestaurant).getProducts().get(posProduct).setDescription(newDescriptionProduct);
+	}
+	
+	public void upgrateCostProduct(int posProduct, int numRestaurant) {
+		System.out.println("Ingrese el nuevo costo del producto");
+		Double newCost = Double.parseDouble(in.nextLine());
+		myFastFood.getRestaurants().get(numRestaurant).getProducts().get(posProduct).setCost(newCost);;
+	}
 	
 	public void upgrateDataClient() {
 		try{
@@ -276,7 +323,7 @@ public class Menu {
 				String infoClient = myFastFood.getInfoClients();
 				System.out.println( infoClient + "\nIngrese el numero del documento del cliente que desea actualizar");
 				String numberDocument = in.nextLine();
-				myFastFood.comfirmNumberIdentity(numberDocument);
+				myFastFood.confirmNumberIdentity(numberDocument);
 				int numPosClient = myFastFood.getPosClient(numberDocument);
 				System.out.println("Que desea actualizar?");
 				System.out.println("(1)<---Tipo de identificacion\n(2)<---Nombre del cliente\n(3)<---Apellido del cliente\n(4)<---Telefono\n(5)<---Adress");
@@ -300,6 +347,10 @@ public class Menu {
 						
 					case 5:
 						upgrateAdressClient(numPosClient);
+					break;
+					
+					default:
+						System.out.println("Debe ingresar una opcion valida");
 					break;
 				}
 			}else {
@@ -348,7 +399,7 @@ public class Menu {
 				String infoOrder = myFastFood.getInfoOrder();
 				System.out.println( infoOrder + "\nIngrese el codigo de la orden que desea actualizar");
 				String codeOrder = in.nextLine();
-				myFastFood.comfirmCodeOrder(codeOrder);
+				myFastFood.confirmCodeOrder(codeOrder);
 				int numPosOrder = myFastFood.getPosOrder(codeOrder);
 				System.out.println("Que desea actualizar?");
 				System.out.println("(1)<---Fecha\n(2)<---Codigo del cliente\n(3)<---Nit del restaurante");
@@ -365,6 +416,10 @@ public class Menu {
 					case 3:
 						upgrateNitRestaurant(numPosOrder);
 					break;
+					
+					default:
+						System.out.println("Debe ingresar una opcion valida");
+					break;
 				}
 			}else {
 				System.out.println("No hay ordenes ingresadas al sistema");
@@ -375,15 +430,33 @@ public class Menu {
 	}
 	
 	public void upgrateDate(int posOrder) {
-		
+		Date newDate = new java.util.Date();
+		myFastFood.getOrder().get(posOrder).setDate(newDate);
+		System.out.println("La nueva fecha es"+ newDate);
 	}
 	
 	public void upgrateCodeClient(int posOrder) {
-		
+		try {
+			String infoClients = myFastFood.getInfoClients();
+			System.out.println(infoClients + "\nDigite el nuevo numero de documento que tendra la orden");
+			String numberDocument = in.nextLine();
+			myFastFood.confirmNumberIdentity(numberDocument);
+			myFastFood.getOrder().get(posOrder).setCodeClient(numberDocument);
+		}catch(DocumentClientNotExistException dcne) {
+			System.err.println("El numero del documento que ingreso no existe en el sistema");
+		}
 	}
 	
 	public void upgrateNitRestaurant(int posOrder) {
-		
+		try {
+			String infoRestaurant = myFastFood.getInfoRestaurants();
+			System.out.println(infoRestaurant + "\nDigite el nuevo nit de restaurante que tendra la orden");
+			String newNitRestaurant = in.nextLine();
+			myFastFood.confirmNit(newNitRestaurant);
+			myFastFood.getOrder().get(posOrder).setNitRestaurant(newNitRestaurant);
+		}catch(NitRestaurantNotExistException nrne) {
+			System.err.println("El nit del restaurante que ingreso no existe en el sistema");
+		}
 	}
 	
 	public void startProgram() {

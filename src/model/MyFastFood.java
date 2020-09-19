@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import exceptions.NitRestaurantNotExistException;
+import exceptions.CodeProductNotExistException;
 import exceptions.DocumentClientNotExistException;
 import exceptions.CodeOrderNotExistException;
 
@@ -64,7 +65,7 @@ public class MyFastFood{
 	
 	public String getInfoProductsOfRestaurant(int num) {
 		String infoProducts;		
-		if(restaurants.get(num-1).getProducts().isEmpty() == false) {
+		if(!restaurants.get(num-1).getProducts().isEmpty()) {
 			infoProducts = "\nLOS PRODUCTOS DEL RESTAURANTE SON:\n";
 			for(int i = 0; i < restaurants.get(num-1).getProducts().size(); i++) {
 				String nameProduct = restaurants.get(num-1).getProducts().get(i).getName();
@@ -223,7 +224,29 @@ public class MyFastFood{
 		return posRestaurant;
 	}
 	
-	public void comfirmNumberIdentity(String numberDocument) throws DocumentClientNotExistException{
+	public void confirmCodeProduct(String codeProduct, int numRestaurant) throws CodeProductNotExistException{
+		boolean exist = false;
+		for(int i = 0; i < restaurants.get(numRestaurant).getProducts().size(); i++) {
+			if(restaurants.get(numRestaurant).getProducts().get(i).getCode().equalsIgnoreCase(codeProduct)) {
+				exist = true;
+			}
+		}
+		if(exist == false) {
+			throw new CodeProductNotExistException();
+		}
+	}
+	
+	public int getPosProduct(String codeProduct, int numRestaurant) {
+		int posProduct;
+		int i = 0;
+		while(!restaurants.get(numRestaurant).getProducts().get(i).getCode().equalsIgnoreCase(codeProduct)) {
+			i++;
+		}
+		posProduct = i;
+		return posProduct;
+	}
+	
+	public void confirmNumberIdentity(String numberDocument) throws DocumentClientNotExistException{
 		boolean exist = false;
 		for(int i = 0; i < clients.size(); i++) {
 			if(clients.get(i).getNumberIdentification().equalsIgnoreCase(numberDocument)) {
@@ -245,7 +268,7 @@ public class MyFastFood{
 		return posClient;
 	}
 	
-	public void comfirmCodeOrder(String codeOrder) throws CodeOrderNotExistException{
+	public void confirmCodeOrder(String codeOrder) throws CodeOrderNotExistException{
 		boolean exist = false;
 		for(int i = 0; i<orders.size(); i++) {
 			if(orders.get(i).getCode().equalsIgnoreCase(codeOrder)) {
