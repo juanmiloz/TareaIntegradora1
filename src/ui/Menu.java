@@ -6,6 +6,8 @@ import java.util.InputMismatchException;
 import java.lang.NumberFormatException;
 import java.lang.IndexOutOfBoundsException;
 import exceptions.NitRestaurantNotExistException;
+import exceptions.DocumentClientNotExistException;
+import exceptions.CodeOrderNotExistException;
 
 public class Menu {
 	
@@ -202,7 +204,7 @@ public class Menu {
 				upgrateDataRestaurant();
 			break;
 			case 2: 
-				upgrateDataProduct();
+	
 			break;
 			case 3:
 				upgrateDataClient();
@@ -269,23 +271,119 @@ public class Menu {
 	}*/
 	
 	public void upgrateDataClient() {
-		if(!myFastFood.getClients().isEmpty()) {
-			String infoClient = myFastFood.getInfoClients();
-			System.out.println( infoClient + "\nIngrese el numero del documento del cliente que desea actualizar");
-			String numberDocument = in.nextLine();
-			myFastFood.comfirmNumberIdentity(numberDocument);
-			int numPosClient;
-		}else {
-			System.out.println("No hay clientes ingresados en el sistema");
+		try{
+			if(!myFastFood.getClients().isEmpty()) {
+				String infoClient = myFastFood.getInfoClients();
+				System.out.println( infoClient + "\nIngrese el numero del documento del cliente que desea actualizar");
+				String numberDocument = in.nextLine();
+				myFastFood.comfirmNumberIdentity(numberDocument);
+				int numPosClient = myFastFood.getPosClient(numberDocument);
+				System.out.println("Que desea actualizar?");
+				System.out.println("(1)<---Tipo de identificacion\n(2)<---Nombre del cliente\n(3)<---Apellido del cliente\n(4)<---Telefono\n(5)<---Adress");
+				int optionUpgrade = Integer.parseInt(in.nextLine());
+				switch(optionUpgrade) {
+					case 1:
+						upgrateTypeIdentificationClient(numPosClient);
+					break;
+					
+					case 2:
+						upgrateNameClient(numPosClient);
+					break;
+					
+					case 3:
+						upgrateApellidoClient(numPosClient);
+					break;
+						
+					case 4:
+						upgratePhoneClient(numPosClient);
+					break;
+						
+					case 5:
+						upgrateAdressClient(numPosClient);
+					break;
+				}
+			}else {
+				System.out.println("No hay clientes ingresados en el sistema");
+			}
+		}catch(DocumentClientNotExistException dcne) {
+			System.err.println("El documento no existe en el sistema");
 		}
 	}
 	
+	public void upgrateTypeIdentificationClient(int posClient) {
+		System.out.println("Ingrese el nuevo tipo de identificacion");
+		System.out.println("1<---Tarjeta de Identidad\n2<---Cedula Ciudadania\n3<---Pasaporte\n4<---Cedula Extranjera\n");
+		int numOption = Integer.parseInt(in.nextLine());
+		String document = myFastFood.assignDocument(numOption);
+		myFastFood.getClients().get(posClient).setTypeIdentification(document);
+	}
+	
+	public void upgrateNameClient(int posClient) {
+		System.out.println("Ingrese el nuevo nombre del cliente");
+		String newName = in.nextLine();
+		myFastFood.getClients().get(posClient).setName(newName);
+	}
+	
+	public void upgrateApellidoClient(int posClient) {
+		System.out.println("Ingrese el nuevo apellido del cliente");
+		String newLastName = in.nextLine();
+		myFastFood.getClients().get(posClient).setLastName(newLastName);
+	}
+	
+	public void upgratePhoneClient(int posClient) {
+		System.out.println("Ingrese el nuevo numero de telefono");
+		String newPhone = in.nextLine();
+		myFastFood.getClients().get(posClient).setPhone(newPhone);
+	}
+	
+	public void upgrateAdressClient(int posClient) {
+		System.out.println("Ingrese la nueva direccion");
+		String newAdress = in.nextLine();
+		myFastFood.getClients().get(posClient).setAdress(newAdress);
+	}
+	
 	public void upgrateDataOrder() {
+		try{
+			if(!myFastFood.getOrder().isEmpty()) {
+				String infoOrder = myFastFood.getInfoOrder();
+				System.out.println( infoOrder + "\nIngrese el codigo de la orden que desea actualizar");
+				String codeOrder = in.nextLine();
+				myFastFood.comfirmCodeOrder(codeOrder);
+				int numPosOrder = myFastFood.getPosOrder(codeOrder);
+				System.out.println("Que desea actualizar?");
+				System.out.println("(1)<---Fecha\n(2)<---Codigo del cliente\n(3)<---Nit del restaurante");
+				int optionOrder = Integer.parseInt(in.nextLine());
+				switch(optionOrder){
+					case 1:
+						upgrateDate(numPosOrder);
+					break;
+					
+					case 2:
+						upgrateCodeClient(numPosOrder);
+					break;
+						
+					case 3:
+						upgrateNitRestaurant(numPosOrder);
+					break;
+				}
+			}else {
+				System.out.println("No hay ordenes ingresadas al sistema");
+			}
+		}catch(CodeOrderNotExistException cone) {
+			System.err.println("El codigo ingresado no corresponde a ninguna orden");
+		}
+	}
+	
+	public void upgrateDate(int posOrder) {
 		
-		String infoOrder = myFastFood.getInfoOrder();
-		System.out.println( infoOrder + "\nIngrese el codigo de la orden que desea actualizar");
-		String codeOrder = in.nextLine();
-		int numPosOrder;
+	}
+	
+	public void upgrateCodeClient(int posOrder) {
+		
+	}
+	
+	public void upgrateNitRestaurant(int posOrder) {
+		
 	}
 	
 	public void startProgram() {

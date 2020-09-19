@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 import exceptions.NitRestaurantNotExistException;
 import exceptions.DocumentClientNotExistException;
+import exceptions.CodeOrderNotExistException;
 
 public class MyFastFood{
 	
@@ -242,6 +243,28 @@ public class MyFastFood{
 		}
 		posClient = i;
 		return posClient;
+	}
+	
+	public void comfirmCodeOrder(String codeOrder) throws CodeOrderNotExistException{
+		boolean exist = false;
+		for(int i = 0; i<orders.size(); i++) {
+			if(orders.get(i).getCode().equalsIgnoreCase(codeOrder)) {
+				exist = true;
+			}
+		}
+		if(exist == false) {
+			throw new CodeOrderNotExistException();
+		}
+	}
+	
+	public int getPosOrder(String code) {
+		int posOrder;
+		int i = 0;
+		while(!orders.get(i).getCode().equalsIgnoreCase(code)) {
+			i++;
+		}
+		posOrder = i;
+		return posOrder;
 	}
 	
 }
