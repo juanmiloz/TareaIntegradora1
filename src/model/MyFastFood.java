@@ -1,12 +1,15 @@
 package model;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import exceptions.NitRestaurantNotExistException;
+import model.comparators.NumberClientComparator;
 import exceptions.CodeProductNotExistException;
 import exceptions.DocumentClientNotExistException;
 import exceptions.CodeOrderNotExistException;
+import exceptions.NameClientNotExistException;
 
 public class MyFastFood{
 	
@@ -76,23 +79,6 @@ public class MyFastFood{
 		}
 		return infoProducts;
 	}
-	
-	/*
-	public String getInfoProductsOfRestaurant(int num) {
-		String infoProducts;		
-		if(!restaurants.get(num-1).getProducts().isEmpty()) {
-			infoProducts = "\nLOS PRODUCTOS DEL RESTAURANTE SON:\n";
-			for(int i = 0; i < restaurants.get(num-1).getProducts().size(); i++) {
-				String nameProduct = restaurants.get(num-1).getProducts().get(i).getName();
-				String nitProduct = restaurants.get(num-1).getProducts().get(i).getNitRestaurant();
-				infoProducts += (i+1) + ") " + nameProduct + " - " + nitProduct + "\n"; 
-			}
-		}else{
-			infoProducts = "No hay productos disponibles en el restaurante";
-		}
-		return infoProducts;
-	}
-	*/
 	
 	/*prueba*/
 	public String getInfoClients() {
@@ -322,12 +308,46 @@ public class MyFastFood{
 	}
 	
 	public String getRestaurantsInOrden() {
-		String organizedRestaurant;
+		String organizedRestaurant = "";
 		ArrayList<Restaurant> organizedRestaurants = restaurants;
-		
-		
-		
+		Collections.sort(restaurants);
+		for(int i = 0; i < organizedRestaurants.size(); i++) {
+			organizedRestaurant += "\n-Restaurante #" + (i+1) + "\n" + organizedRestaurants.get(i).toString();
+		}
 		return organizedRestaurant;
 	}
 	
+	public String getClientsInOrden() {
+		String organizedClients = "";
+		ArrayList<Client> organizedClientByNumber = clients;
+		NumberClientComparator ncc = new NumberClientComparator();
+		Collections.sort(organizedClientByNumber, ncc);
+		for(int i = 0; i<organizedClientByNumber.size(); i++) {
+			organizedClients += "\n-Cliente #" + (i+1) + "\n" + organizedClientByNumber.get(i).toString();
+		}
+		return organizedClients;
+	}
+	
+	public void confirmExistName(String name) throws NameClientNotExistException{
+		boolean exist = false;
+		for(int i = 0; i<clients.size(); i++) {
+			if(clients.get(i).getName().equalsIgnoreCase(name)) {
+				exist = true;
+			}
+		}
+		if(exist == false) {
+			throw new NameClientNotExistException();
+		}
+	} 
+	
+	public String searchName(String name) {
+		String infoName = "";
+		name = name.trim();
+		for(int i = 0; i<clients.size();i++) {
+			if(clients.get(i).getName().trim().equalsIgnoreCase(name)) {
+				infoName += clients.get(i).toString();
+			}
+		}
+		return infoName;
+	}
 }

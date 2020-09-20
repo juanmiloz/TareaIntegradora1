@@ -8,6 +8,7 @@ import java.lang.IndexOutOfBoundsException;
 import exceptions.NitRestaurantNotExistException;
 import exceptions.CodeProductNotExistException;
 import exceptions.DocumentClientNotExistException;
+import exceptions.NameClientNotExistException;
 import exceptions.CodeOrderNotExistException;
 
 public class Menu {
@@ -18,6 +19,7 @@ public class Menu {
 	private final static int NEW_ORDER = 4;
 	private final static int NEW_ACTUALIZATION = 5;
 	private final static int VISUALIZE = 6;
+	private final static int SEARCH_CLIENT = 7;
 	private Scanner in = new Scanner(System.in);
 	private MyFastFood myFastFood = new MyFastFood();
 	
@@ -34,7 +36,8 @@ public class Menu {
 			System.out.println("(4)<---Hacer un nuevo pedido");
 			System.out.println("(5)<---Realizar una actualizacion");
 			System.out.println("(6)<---Mostrar en pantalla....");
-			System.out.println("(7)<---Cerrar programa");
+			System.out.println("(7)<---Buscar un cliente");
+			System.out.println("(8)<---Cerrar programa");
 			option = Integer.parseInt(in.nextLine());
 			
 			switch(option) {
@@ -59,14 +62,18 @@ public class Menu {
 				break;
 				
 				case VISUALIZE:
-					
+					visualize();
 				break;
 				
-				case 7:
+				case SEARCH_CLIENT:
+					searchClient();
+				break;
+				
+				case 8:
 					mostrarTodo();
 				break;
 			}
-		}while(option != 8 && option <= 8);
+		}while(option != 9 && option <= 9);
 	}
 	
 	public void newRestaurant() {
@@ -479,6 +486,7 @@ public class Menu {
 		switch(optionVisualize) {
 			case 1:
 				visualizeRestaurants();
+				System.out.println("Salio");
 			break;
 			
 			case 2:
@@ -492,11 +500,28 @@ public class Menu {
 	}
 	
 	public void visualizeRestaurants() {
-		
+		String infoOrganizedRestaurants = myFastFood.getRestaurantsInOrden();
+		System.out.println(infoOrganizedRestaurants);
 	}
 	
 	public void visualizeClients() {
-		
+		String infoOrganizedClients = myFastFood.getClientsInOrden();
+		System.out.println(infoOrganizedClients);
+	}
+	
+	public void searchClient() {
+		System.out.println("Ingrese el nombre del cliente que desea buscar");
+		String name = in.nextLine();
+		try {
+			long start = System.currentTimeMillis();
+			myFastFood.confirmExistName(name);
+			String infoClient = myFastFood.searchName(name);
+			long finish = System.currentTimeMillis();
+			System.out.println(infoClient);
+			System.out.println("El tiempo que tardo en encontrarlo fue: " + (finish-start));
+		}catch(NameClientNotExistException ncne) {
+			System.err.println("El nombre que ingreso no se encuentra registrado en el sistema");
+		}
 	}
 	
 	public void startProgram() {

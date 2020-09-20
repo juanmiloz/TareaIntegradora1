@@ -2,7 +2,7 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Restaurant {
+public class Restaurant implements Comparable<Restaurant>{
 	
 	private String name;
 	private String nit;
@@ -60,5 +60,12 @@ public class Restaurant {
 		String infoRestaurant;
 		infoRestaurant = "Nombre: " + getName() + "\nNit: " + getNit() + "\nAdministrador: " + getNameAdministraitor() + "\n";
 		return infoRestaurant;
+	}
+
+	@Override
+	public int compareTo(Restaurant restaurant) {
+		int comp;
+		comp = name.compareTo(restaurant.getName());
+		return comp;
 	}
 }
