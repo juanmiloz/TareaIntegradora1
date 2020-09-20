@@ -7,8 +7,10 @@ import java.lang.NumberFormatException;
 import java.lang.IndexOutOfBoundsException;
 import exceptions.NitRestaurantNotExistException;
 import exceptions.NumberIdentificationNotExistException;
+import exceptions.StatusInvalidException;
 import exceptions.CodeProductNotExistException;
 import exceptions.DocumentClientNotExistException;
+import exceptions.EqualsStatusException;
 import exceptions.NameClientNotExistException;
 import exceptions.NitRestaurantExistException;
 import exceptions.CodeOrderNotExistException;
@@ -202,9 +204,10 @@ public class Menu {
 		if(!myFastFood.getRestaurants().get(x-1).getProducts().isEmpty()) {
 			String infoProducts = myFastFood.getInfoProductsOfRestaurant(x);
 			System.out.println(infoProducts);
-			System.out.println("Cuantos productos desea llevar");
+			System.out.println("Cuantos productos diferentes desea llevar");
 			int numOfProductsToOrder = Integer.parseInt(in.nextLine());
-			myFastFood.addNewOrder(numRamdom, date, idClient, nitRestaurant);
+			String status = "SOLICITADO";
+			myFastFood.addNewOrder(numRamdom, date, idClient, nitRestaurant, status);
 			for(int i = 0; i < numOfProductsToOrder; i++) {
 				System.out.println("Ingrese el numero del producto el cual desea llevar");
 				int numProduct = Integer.parseInt(in.nextLine());
@@ -229,6 +232,7 @@ public class Menu {
 		System.out.println("(2)<---Actualizar datos de un poducto");
 		System.out.println("(3)<---Actualizar datos de un cliente");
 		System.out.println("(4)<---Actualizar datos de una orden");
+		System.out.println("(5)<---Actualizar estado del pedido");
 		int options = Integer.parseInt(in.nextLine());
 		
 		switch(options) {
@@ -243,6 +247,12 @@ public class Menu {
 			break;
 			case 4:
 				upgrateDataOrder();
+			break;
+			case 5:
+				upgrateStatusOrder();
+			break; 
+			default:
+				System.out.println("Debe ingresar una opcion valida");
 			break;
 		}
 	}
@@ -490,6 +500,23 @@ public class Menu {
 			myFastFood.getOrder().get(posOrder).setNitRestaurant(newNitRestaurant);
 		}catch(NitRestaurantNotExistException nrne) {
 			System.err.println("El nit del restaurante que ingreso no existe en el sistema");
+		}
+	}
+	
+	public void upgrateStatusOrder() {
+		String infoOrder = myFastFood.getInfoOrder();
+		System.out.println(infoOrder + "\nA que numero de orden le desea actualizar el estatus");
+		int numOrder = Integer.parseInt(in.nextLine());
+		System.out.println("A que estatus desea actualizar la orden?\n(1)EN PROCESO\n(2)ENVIADO\n(3)ENTREGADO");
+		int numNewStatus = Integer.parseInt(in.nextLine());
+		try {
+			myFastFood.upgradeStatus(numOrder, numNewStatus);
+		}catch(StatusInvalidException sie) {
+			System.err.println("El estado que intenta introducir es menor al actual");
+		}catch(EqualsStatusException ese) {
+			System.err.println("El estado que intenta introducir es el mismo que el actual");
+		}catch(IndexOutOfBoundsException ipobe) {
+			System.err.println("El numero de orden que ingreso no existe");
 		}
 	}
 	

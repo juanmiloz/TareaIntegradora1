@@ -8,14 +8,20 @@ import exceptions.CodeProductExistException;
 import java.util.Random;
 import exceptions.NitRestaurantNotExistException;
 import exceptions.NumberIdentificationNotExistException;
+import exceptions.StatusInvalidException;
 import model.comparators.NumberClientComparator;
 import exceptions.CodeProductNotExistException;
 import exceptions.DocumentClientNotExistException;
+import exceptions.EqualsStatusException;
 import exceptions.CodeOrderNotExistException;
 import exceptions.NameClientNotExistException;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+
 public class MyFastFood{
 	
+	private final static String FILE_NAME = "data/ordersRegister.csv";
 	private ArrayList<Restaurant> restaurants;
 	private ArrayList<Client> clients;
 	private ArrayList<Order> orders;
@@ -171,8 +177,8 @@ public class MyFastFood{
 		}
 	}
 	
-	public void addNewOrder(String code, Date date, String codeClient, String nitRestaurant) {
-		Order newOrder = new Order(code,date,codeClient,nitRestaurant);
+	public void addNewOrder(String code, Date date, String codeClient, String nitRestaurant, String status) {
+		Order newOrder = new Order(code,date,codeClient,nitRestaurant,status);
 		orders.add(newOrder);
 	}
 	
@@ -347,6 +353,38 @@ public class MyFastFood{
 		return posOrder;
 	}
 	
+	public void upgradeStatus(int pos, int numNewStatus)throws StatusInvalidException, EqualsStatusException {
+		pos = pos-1;
+		String statusActual = orders.get(pos).getStatus();
+		int statusActualNum;
+		if(statusActual.equalsIgnoreCase("EN PROCESO")) {
+			statusActualNum = 2;
+		}else if(statusActual.equalsIgnoreCase("ENVIADO")) {
+			statusActualNum = 3;
+		}else if(statusActual.equalsIgnoreCase("ENTREGADO")) {
+			statusActualNum = 4;
+		}else {
+			statusActualNum = 1;
+		}
+		if(statusActualNum < numNewStatus) {
+			assingNewStatus(pos,numNewStatus);
+		}else if(statusActualNum < numNewStatus) {
+			throw new StatusInvalidException();
+		}else {
+			throw new EqualsStatusException();
+		}
+	}
+	
+	public void assingNewStatus(int pos, int numNewStatus) {
+		if(numNewStatus == 2) {
+			orders.get(pos).setStatus("EN PROCESO");
+		}else if(numNewStatus == 3) {
+			orders.get(pos).setStatus("ENVIADO");
+		}else if(numNewStatus == 4) {
+			orders.get(pos).setStatus("ENTREGADO");
+		}
+	}
+	
 	public String getRestaurantsInOrden() {
 		String organizedRestaurant = "";
 		ArrayList<Restaurant> organizedRestaurants = restaurants;
@@ -389,5 +427,16 @@ public class MyFastFood{
 			}
 		}
 		return infoName;
+	}
+	
+	//incompleto
+	public void exportRegisterOrder() throws FileNotFoundException{
+		PrintWriter pw = new PrintWriter(FILE_NAME);
+		
+		for(int i = 0; i<orders.size(); i++) {
+			Order order = orders.get(i);
+		}
+		
+		pw.close();
 	}
 }

@@ -11,14 +11,16 @@ public class Order {
 	private String nitRestaurant;
 	private String productsAndQuantity [];
 	private ArrayList<String[]> productsOrder;
+	private String status;
 	
-	public Order (String code, Date date, String codeClient, String nitRestaurant) {
+	public Order (String code, Date date, String codeClient, String nitRestaurant, String status) {
 		this.code = code;
 		this.date = date;
 		this.codeClient = codeClient;
 		this.nitRestaurant = nitRestaurant;
 		productsAndQuantity = new String [2];
 		productsOrder = new ArrayList<String[]>();
+		this.status = status;
 	}
 	
 	public void setCode(String code) {
@@ -65,9 +67,17 @@ public class Order {
 		return productsOrder;
 	}
 	
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
+	public String getStatus() {
+		return status;
+	}
+	
 	public String toString() {
 		String infoOrder = "\nCodigo de orden: " + code + "\nFecha de pedido: " + date + "\nNumero de identidad del cliente: " + codeClient;
-		infoOrder += "\nCodigo del restaurante: " + nitRestaurant;
+		infoOrder += "\nCodigo del restaurante: " + nitRestaurant + "\nEstatus: " + status;
 		for(int i = 0; i < productsOrder.size();i++) {
 			String temp[] = productsOrder.get(i);
 			infoOrder += "\nProducto a llevar numero: " + (i+1) + "\nnombre: " + temp[0] + " cantidad: " + temp[1] + "\n";
