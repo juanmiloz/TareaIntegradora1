@@ -64,6 +64,21 @@ public class MyFastFood{
 	}
 	
 	public String getInfoProductsOfRestaurant(int num) {
+		String infoProducts;
+		if(!restaurants.get(num-1).getProducts().isEmpty()) {
+			infoProducts = "\nLOS PRODUCTOS DEL RESTAURANTE SON:";
+			for(int i = 0; i<restaurants.get(num-1).getProducts().size(); i++) {
+				infoProducts += "\nProducto numero = " + (i+1);
+				infoProducts += restaurants.get(num-1).getProducts().get(i).toString();
+			}
+		}else {
+			infoProducts = "No hay productos disponibles en el restaurante";
+		}
+		return infoProducts;
+	}
+	
+	/*
+	public String getInfoProductsOfRestaurant(int num) {
 		String infoProducts;		
 		if(!restaurants.get(num-1).getProducts().isEmpty()) {
 			infoProducts = "\nLOS PRODUCTOS DEL RESTAURANTE SON:\n";
@@ -77,6 +92,7 @@ public class MyFastFood{
 		}
 		return infoProducts;
 	}
+	*/
 	
 	/*prueba*/
 	public String getInfoClients() {
@@ -94,10 +110,15 @@ public class MyFastFood{
 	}
 	
 	public String getInfoOrder() {
-		String infoOrder = "\nLAS ORDENES EN TRANSCURSO SON:\n";
-		for(int i = 0; i < orders.size();i++) {
-			infoOrder += "\nOrden numero = " + (i+1) + "\n";
-			infoOrder += orders.get(i).toString();
+		String infoOrder;
+		if(!orders.isEmpty()) {
+			infoOrder = "\nLAS ORDENES EN TRANSCURSO SON:\n";
+			for(int i = 0; i < orders.size();i++) {
+				infoOrder += "\nOrden numero = " + (i+1) + "\n";
+				infoOrder += orders.get(i).toString();
+			}
+		}else {
+			infoOrder = "No hay ordenes ingresadas en el sistema";
 		}
 		return infoOrder;
 	}
@@ -224,6 +245,16 @@ public class MyFastFood{
 		return posRestaurant;
 	}
 	
+	public boolean productsEmpty() {
+		boolean empty = false;
+		for(int i = 0; i < restaurants.size(); i++) {
+			if(!restaurants.get(i).getProducts().isEmpty()) {
+				empty = true; 
+			}
+		}
+		return empty;
+	}
+	
 	public void confirmCodeProduct(String codeProduct, int numRestaurant) throws CodeProductNotExistException{
 		boolean exist = false;
 		for(int i = 0; i < restaurants.get(numRestaurant).getProducts().size(); i++) {
@@ -237,7 +268,7 @@ public class MyFastFood{
 	}
 	
 	public int getPosProduct(String codeProduct, int numRestaurant) {
-		int posProduct;
+		int posProduct; 
 		int i = 0;
 		while(!restaurants.get(numRestaurant).getProducts().get(i).getCode().equalsIgnoreCase(codeProduct)) {
 			i++;
@@ -288,6 +319,15 @@ public class MyFastFood{
 		}
 		posOrder = i;
 		return posOrder;
+	}
+	
+	public String getRestaurantsInOrden() {
+		String organizedRestaurant;
+		ArrayList<Restaurant> organizedRestaurants = restaurants;
+		
+		
+		
+		return organizedRestaurant;
 	}
 	
 }

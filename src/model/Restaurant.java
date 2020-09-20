@@ -49,9 +49,9 @@ public class Restaurant {
 	}
 	
 	public String getInfoProducts() {
-		String infoProducts = "		\nLos productos del restaurante son:\n";
+		String infoProducts = "\nLos productos del restaurante son:\n";
 		for(int i = 0; i <products.size();i++) {
-			infoProducts += "Producto numero " + (i+1) + "\n" + products.get(i).toString();
+			infoProducts += "-Producto numero " + (i+1) + "\n" + products.get(i).toString();
 		}
 		return infoProducts;
 	}

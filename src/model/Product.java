@@ -57,7 +57,7 @@ public class Product {
 	}
 	
 	public String toString() {
-		String infoProduct = "Codigo Producto: " + code + "\nNombre Producto: " + name + "\nDescripcion producto: " + description;
+		String infoProduct = "\nCodigo Producto: " + code + "\nNombre Producto: " + name + "\nDescripcion producto: " + description;
 		infoProduct += "\nCosto: " + cost +"\nNit Restaurante: " + nitRestaurant + "\n";
 		return infoProduct;
 	}

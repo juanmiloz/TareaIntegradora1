@@ -17,6 +17,7 @@ public class Menu {
 	private final static int NEW_CLIENT = 3;
 	private final static int NEW_ORDER = 4;
 	private final static int NEW_ACTUALIZATION = 5;
+	private final static int VISUALIZE = 6;
 	private Scanner in = new Scanner(System.in);
 	private MyFastFood myFastFood = new MyFastFood();
 	
@@ -32,7 +33,8 @@ public class Menu {
 			System.out.println("(3)<---Ingresar un nuevo cliente");
 			System.out.println("(4)<---Hacer un nuevo pedido");
 			System.out.println("(5)<---Realizar una actualizacion");
-			System.out.println("(6)<---Cerrar programa");
+			System.out.println("(6)<---Mostrar en pantalla....");
+			System.out.println("(7)<---Cerrar programa");
 			option = Integer.parseInt(in.nextLine());
 			
 			switch(option) {
@@ -54,6 +56,10 @@ public class Menu {
 				
 				case NEW_ACTUALIZATION:
 					newActualization();
+				break;
+				
+				case VISUALIZE:
+					
 				break;
 				
 				case 7:
@@ -205,7 +211,7 @@ public class Menu {
 				upgrateDataRestaurant();
 			break;
 			case 2: 
-	
+				upgrateDataProduct();
 			break;
 			case 3:
 				upgrateDataClient();
@@ -262,14 +268,15 @@ public class Menu {
 	
 	public void upgrateDataProduct() {
 		try{
-			if(!myFastFood.getOrder().isEmpty()) {
+			if(myFastFood.productsEmpty()) {
 				String infoRestaurants = myFastFood.getInfoRestaurants();
-				System.out.println(infoRestaurants + "\nIngrese en que restaurante se encuentra el producto que desea actualizar");
+				System.out.println(infoRestaurants + "\nIngrese en que numero de restaurante se encuentra el producto que desea actualizar");
 				int numRestaurant = Integer.parseInt(in.nextLine());
 				String infoProductsOfRestaurant = myFastFood.getInfoProductsOfRestaurant(numRestaurant);
 				System.out.println(infoProductsOfRestaurant + "\nIngrese el codigo del producto que desea actualizar");
 				String codeProduct = in.nextLine();
-				myFastFood.confirmCodeProduct(codeProduct, (numRestaurant-1));
+				numRestaurant = numRestaurant-1;
+				myFastFood.confirmCodeProduct(codeProduct, numRestaurant);
 				int numPosProduct = myFastFood.getPosProduct(codeProduct, numRestaurant);
 				System.out.println("Que desea actualizar");
 				System.out.println("(1)<---Nombre del producto\n(2)<---Descripcion del producto\n(3)<---Costo del producto");
@@ -284,7 +291,7 @@ public class Menu {
 					break;
 					
 					case 3:
-						upgrateDescriptionProduct(numPosProduct, numRestaurant);
+						upgrateCostProduct(numPosProduct, numRestaurant);
 					break;
 					
 					default:
@@ -296,6 +303,8 @@ public class Menu {
 			}
 		}catch(CodeProductNotExistException cpde) {
 			System.err.println("El codigo del producto ingresado no existe");
+		}catch(java.lang.IndexOutOfBoundsException iobe) {
+			System.err.println("Debe seleccionar un restaurante que exista");
 		}
 	}
 	
@@ -457,6 +466,37 @@ public class Menu {
 		}catch(NitRestaurantNotExistException nrne) {
 			System.err.println("El nit del restaurante que ingreso no existe en el sistema");
 		}
+	}
+	
+	public void visualize() {
+		System.out.println("=========================");
+		System.out.println("|MENU DE VISUALIZACIONES|");
+		System.out.println("=========================");
+		System.out.println("Que desea visualizar?");
+		System.out.println("(1)<---Ver los restaurantes ingresados al sistema");
+		System.out.println("(2)<---Vel los clientes ingresados al sistema");
+		int optionVisualize = Integer.parseInt(in.nextLine());
+		switch(optionVisualize) {
+			case 1:
+				visualizeRestaurants();
+			break;
+			
+			case 2:
+				visualizeClients();
+			break;
+			
+			default:
+				System.out.println("Ingrese un valor valido");
+			break;
+		}
+	}
+	
+	public void visualizeRestaurants() {
+		
+	}
+	
+	public void visualizeClients() {
+		
 	}
 	
 	public void startProgram() {
