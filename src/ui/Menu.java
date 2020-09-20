@@ -6,10 +6,13 @@ import java.util.InputMismatchException;
 import java.lang.NumberFormatException;
 import java.lang.IndexOutOfBoundsException;
 import exceptions.NitRestaurantNotExistException;
+import exceptions.NumberIdentificationNotExistException;
 import exceptions.CodeProductNotExistException;
 import exceptions.DocumentClientNotExistException;
 import exceptions.NameClientNotExistException;
+import exceptions.NitRestaurantExistException;
 import exceptions.CodeOrderNotExistException;
+import exceptions.CodeProductExistException;
 
 public class Menu {
 	
@@ -20,6 +23,7 @@ public class Menu {
 	private final static int NEW_ACTUALIZATION = 5;
 	private final static int VISUALIZE = 6;
 	private final static int SEARCH_CLIENT = 7;
+	private final static int EXPORT_ORDERS_REPORT = 8; 
 	private Scanner in = new Scanner(System.in);
 	private MyFastFood myFastFood = new MyFastFood();
 	
@@ -37,7 +41,8 @@ public class Menu {
 			System.out.println("(5)<---Realizar una actualizacion");
 			System.out.println("(6)<---Mostrar en pantalla....");
 			System.out.println("(7)<---Buscar un cliente");
-			System.out.println("(8)<---Cerrar programa");
+			System.out.println("(8)<---Exportar registro de pedidos");
+			System.out.println("(9)<---Cerrar programa");
 			option = Integer.parseInt(in.nextLine());
 			
 			switch(option) {
@@ -69,11 +74,15 @@ public class Menu {
 					searchClient();
 				break;
 				
-				case 8:
+				case EXPORT_ORDERS_REPORT:
+					exportOrdesReport();
+				break; 
+				
+				case 9:
 					mostrarTodo();
 				break;
 			}
-		}while(option != 9 && option <= 9);
+		}while(option != 10 && option <= 10);
 	}
 	
 	public void newRestaurant() {
@@ -82,11 +91,14 @@ public class Menu {
 			String nameRestaurant = in.nextLine();
 			System.out.println("Ingrese el nit del restaurante");
 			String nit = in.nextLine();
+			myFastFood.confirmNotRepeatNitRestaurant(nit);
 			System.out.println("Ingrese el nombre del administrador");
 			String nameAdministrator = in.nextLine();
 			myFastFood.addNewRestaurant(nameRestaurant, nit, nameAdministrator);
 		}catch(InputMismatchException ime) {
 			System.err.println("Ingrese datos validos");
+		}catch(NitRestaurantExistException nre) {
+			System.err.println("El nit que ingreso ya existe en el sistema");
 		}
 	}
 	
@@ -104,6 +116,7 @@ public class Menu {
 			if(!myFastFood.getInfoRestaurants().equalsIgnoreCase("no hay restaurantes disponibles")) {
 				System.out.println("Que restaurante tendra este producto?(ingrese el numero)");
 				int numberRestaurant = Integer.parseInt(in.nextLine());
+				myFastFood.confirmNotExistCodeProducto(codeProduct, numberRestaurant);
 				String nit = myFastFood.assignNit(numberRestaurant);
 				Product newProduct = new Product(codeProduct, nameProduct, description,cost,nit);
 				myFastFood.addNewProduct(numberRestaurant, newProduct);
@@ -112,6 +125,8 @@ public class Menu {
 			System.err.println("Ingrese datos validos");
 		}catch(IndexOutOfBoundsException ibe) {
 			System.err.println("El restaurante que ingreso no existe");
+		}catch(CodeProductExistException cpe) {
+			System.err.println("El codigo del producto que ingreso ya existe");
 		}
 	}
 	
@@ -133,6 +148,7 @@ public class Menu {
 			}while(repeat);
 			System.out.println("Ingrese el numero de identificacion");
 			String numberIdentification = in.nextLine();
+			myFastFood.confirmNotExistIdClient(numberIdentification);
 			System.out.println("Ingrese el nombre");
 			String name = in.nextLine();
 			System.out.println("Ingrese el apellido");
@@ -144,6 +160,8 @@ public class Menu {
 			myFastFood.addNewClient(document, numberIdentification, name, lastName , phone, address);
 		}catch(NumberFormatException nfe) {
 			System.err.println("Ingrese valores validos porfavor");
+		}catch(NumberIdentificationNotExistException nine) {
+			System.err.println("El numero de identificacion ya esta registrado con otro cliente");
 		}
 	}
 	
@@ -522,6 +540,10 @@ public class Menu {
 		}catch(NameClientNotExistException ncne) {
 			System.err.println("El nombre que ingreso no se encuentra registrado en el sistema");
 		}
+	}
+	
+	public void exportOrdesReport() {
+		
 	}
 	
 	public void startProgram() {

@@ -3,8 +3,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import exceptions.NitRestaurantExistException;
+import exceptions.CodeProductExistException;
 import java.util.Random;
 import exceptions.NitRestaurantNotExistException;
+import exceptions.NumberIdentificationNotExistException;
 import model.comparators.NumberClientComparator;
 import exceptions.CodeProductNotExistException;
 import exceptions.DocumentClientNotExistException;
@@ -109,13 +112,50 @@ public class MyFastFood{
 		return infoOrder;
 	}
 	
+	public void confirmNotRepeatNitRestaurant(String nit) throws NitRestaurantExistException{
+		boolean exist = false;
+		for(int i = 0; i < restaurants.size(); i++) {
+			if(restaurants.get(i).getNit().equalsIgnoreCase(nit)) {
+				exist = true;
+			}
+		}
+		if(exist) {
+			throw new NitRestaurantExistException();
+		}
+	}
+	
 	public void addNewRestaurant(String nameRestaurant, String nit, String nameAdministrator) {
 		Restaurant newRestaurant = new Restaurant(nameRestaurant, nit, nameAdministrator);
 		restaurants.add(newRestaurant);
 	}
 	
+	public void confirmNotExistCodeProducto(String code, int numRestaurant) throws CodeProductExistException{
+		boolean exist = false;
+		numRestaurant = numRestaurant-1;
+		for(int i = 0; i < restaurants.get(numRestaurant).getProducts().size(); i++) {
+			if(restaurants.get(numRestaurant).getProducts().get(i).getCode().equalsIgnoreCase(code)) {
+				exist = true;
+			}
+		}
+		if(exist) {
+			throw new CodeProductExistException();
+		}
+	}
+	
 	public void addNewProduct(int numRestaurant, Product newProduct) {
 		restaurants.get(numRestaurant-1).addProduct(newProduct);
+	}
+	
+	public void confirmNotExistIdClient(String numberDocument) throws NumberIdentificationNotExistException{
+		boolean exist = false;
+		for(int i = 0; i<clients.size(); i++) {
+			if(clients.get(i).getNumberIdentification().equalsIgnoreCase(numberDocument)) {
+				exist = true;
+			}
+		}
+		if(exist) {
+			throw new NumberIdentificationNotExistException();
+		}
 	}
 	
 	public void addNewClient(String document, String numberIdentification, String lastName ,String name , String phone, String adress) {
