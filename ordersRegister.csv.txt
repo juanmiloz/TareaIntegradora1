@@ -1,0 +1,2 @@
+Codigo orden;Fecha;Numero documento cliente;Nit restaurante;Nombre producto;Cantidad producto;estatus orden
+680904;Sun Sep 20 19:05:31 COT 2020;66992912;12343;Corralera;1;SOLICITADO

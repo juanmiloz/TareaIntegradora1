@@ -15,13 +15,19 @@ import exceptions.DocumentClientNotExistException;
 import exceptions.EqualsStatusException;
 import exceptions.CodeOrderNotExistException;
 import exceptions.NameClientNotExistException;
-
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class MyFastFood{
 	
 	private final static String FILE_NAME = "data/ordersRegister.csv";
+	private final static String FILE_DATA_RESTAURANT = "data/dataRestaurants.csv";
+	private final static String FILE_DATA_PRODUCTS = "data/dataProducts.csv";
+	private final static String FILE_DATA_CLIENTS = "data/dataClients.csv";
+	private final static String FILE_DATA_ORDER = "data/dataOrder.csv";
 	private ArrayList<Restaurant> restaurants;
 	private ArrayList<Client> clients;
 	private ArrayList<Order> orders;
@@ -429,14 +435,62 @@ public class MyFastFood{
 		return infoName;
 	}
 	
-	//incompleto
-	public void exportRegisterOrder() throws FileNotFoundException{
+	//Con dudas
+	public void exportRegisterOrder(String s) throws FileNotFoundException{
 		PrintWriter pw = new PrintWriter(FILE_NAME);
-		
-		for(int i = 0; i<orders.size(); i++) {
-			Order order = orders.get(i);
+		ArrayList<Order> ordersOrganized = orders;
+		Collections.sort(ordersOrganized);
+		s = s.trim();
+		pw.println("Codigo orden" + s + "Fecha" + s + "Numero documento cliente" + s + "Nit restaurante" + s + "Nombre producto" + s + "Cantidad producto" + s + "estatus orden");
+		for(int i = 0; i<orders.size();i++) {
+			Order currOrder = ordersOrganized.get(i);
+			for(int j = 0; j < currOrder.getProductsOrder().size(); j++) {
+				String[] array = currOrder.getProductsOrder().get(j);
+				String nameProduct = array[0];
+				String quantity = array[1];
+				pw.println(currOrder.getCode() + s + currOrder.getDate() + s + currOrder.getCodeClient() + s + currOrder.getNitRestaurant() + s + nameProduct + s + quantity + s + currOrder.getStatus());
+			}
 		}
-		
 		pw.close();
+	}
+	
+	public void importDataRestaurants() throws IOException{
+		BufferedReader br = new BufferedReader(new FileReader(FILE_DATA_RESTAURANT));
+		String line = br.readLine();
+		int cont = -1;
+		while(line != null) {
+			String [] partsLine = line.split(",");
+			cont += 1;
+			try {
+				if(!restaurants.isEmpty()) {
+					confirmNotRepeatNitRestaurant(partsLine[1]);
+				}
+				addNewRestaurant(partsLine[0], partsLine[1], partsLine[2]);
+			}catch(NitRestaurantExistException nre) {
+				System.err.println("El nit del restaurante en la fila " + cont + " ya existe en el sistema");
+			}
+			line = br.readLine();
+		}
+		br.close();
+	}
+	
+	public void importDataClients() throws IOException{
+		BufferedReader br = new BufferedReader(new FileReader(FILE_DATA_CLIENTS));
+		String line = br.readLine();
+		int cont = -1;
+		while(line != null) {
+			String [] partsLine = line.split(",");
+			cont += 1;
+			try {
+				if(!clients.isEmpty()) {
+					confirmNotExistIdClient(partsLine[1]);
+				}
+				addNewClient(partsLine[0], partsLine[1], partsLine[2], partsLine[3], partsLine[4], partsLine[5]);
+			}catch(NumberIdentificationNotExistException nine) {
+				System.err.println("El numero de identificacion del cliente en la fila " + cont + " ya existe en el sistema");
+			}
+			line = br.readLine();
+		}
+		br.close();
 	}
 }

@@ -1,0 +1,4 @@
+Codigo orden;Fecha;Numero documento cliente;Nit restaurante;Nombre producto;Cantidad producto;estatus orden
+782828;Sun Sep 20 22:08:39 COT 2020;1006050051;17253;callejera;1;SOLICITADO
+626133;Sun Sep 20 22:09:06 COT 2020;66992912;17253;Corralera;2;SOLICITADO
+626133;Sun Sep 20 22:09:06 COT 2020;66992912;17253;callejera;1;SOLICITADO

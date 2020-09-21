@@ -4,6 +4,8 @@ import java.util.Scanner;
 import java.util.Date;
 import java.util.InputMismatchException;
 import java.lang.NumberFormatException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.IndexOutOfBoundsException;
 import exceptions.NitRestaurantNotExistException;
 import exceptions.NumberIdentificationNotExistException;
@@ -26,6 +28,7 @@ public class Menu {
 	private final static int VISUALIZE = 6;
 	private final static int SEARCH_CLIENT = 7;
 	private final static int EXPORT_ORDERS_REPORT = 8; 
+	private final static int IMPORT = 9;
 	private Scanner in = new Scanner(System.in);
 	private MyFastFood myFastFood = new MyFastFood();
 	
@@ -41,10 +44,11 @@ public class Menu {
 			System.out.println("(3)<---Ingresar un nuevo cliente");
 			System.out.println("(4)<---Hacer un nuevo pedido");
 			System.out.println("(5)<---Realizar una actualizacion");
-			System.out.println("(6)<---Mostrar en pantalla....");
+			System.out.println("(6)<---Mostrar en pantalla...");
 			System.out.println("(7)<---Buscar un cliente");
 			System.out.println("(8)<---Exportar registro de pedidos");
-			System.out.println("(9)<---Cerrar programa");
+			System.out.println("(9)<---Importar...");
+			System.out.println("(10)<---Cerrar programa");
 			option = Integer.parseInt(in.nextLine());
 			
 			switch(option) {
@@ -80,11 +84,15 @@ public class Menu {
 					exportOrdesReport();
 				break; 
 				
-				case 9:
+				case IMPORT:
+					importData();
+				break;
+				
+				case 10:
 					mostrarTodo();
 				break;
 			}
-		}while(option != 10 && option <= 10);
+		}while(option != 11 && option <= 11);
 	}
 	
 	public void newRestaurant() {
@@ -570,7 +578,63 @@ public class Menu {
 	}
 	
 	public void exportOrdesReport() {
-		
+		try {
+			System.out.println("Cual es el separador que utilizara?");
+			String separator = in.nextLine();
+			myFastFood.exportRegisterOrder(separator);
+			System.out.println("Los datos fueron exportados exitosamente");
+		}catch(FileNotFoundException fnfe) {
+			System.err.println("Los datos no pueden ser exportados");
+		}
+	}
+	
+	public void importData() {
+		System.out.println("================================");
+		System.out.println("|MENU DE IMPORTACIONES DE DATOS|");
+		System.out.println("================================");
+		System.out.println("Que desea importar?");
+		System.out.println("(1)<---importar datos de restaurantes");
+		System.out.println("(2)<---importar datos de productos");
+		System.out.println("(3)<---importar datos de clientes");
+		System.out.println("(4)<---importar datos de ordenes");
+		int optionImport = Integer.parseInt(in.nextLine());
+		switch(optionImport) {
+			case 1:
+				importRestaurants();
+			break;
+			case 2:
+				
+			break;
+			case 3:
+				importClients();
+			break;
+			case 4:
+				
+			break;
+			default:
+				System.out.println("Ingrese una opcion valida");
+			break;
+		}
+	}
+	
+	public void importRestaurants(){
+		System.out.println("Importando datos....");
+		try {
+			myFastFood.importDataRestaurants();
+			System.out.println("Datos importados exitosamente");
+		}catch(IOException ioe){
+			System.err.println("Los datos no se pudieron importar");	
+		}
+	}
+	
+	public void importClients(){
+		System.out.println("Importando datos....");
+		try {
+			myFastFood.importDataClients();
+			System.out.println("Datos importados exitosamente");
+		}catch(IOException ioe){
+			System.err.println("Los datos no se pudieron importar");	
+		}
 	}
 	
 	public void startProgram() {

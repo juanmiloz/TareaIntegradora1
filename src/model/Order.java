@@ -4,21 +4,19 @@ import java.util.ArrayList;
 import java.util.Date;
 
 
-public class Order {
+public class Order implements Comparable<Order>{
 	private String code;
 	private Date date;
 	private String codeClient;
 	private String nitRestaurant;
-	private String productsAndQuantity [];
 	private ArrayList<String[]> productsOrder;
 	private String status;
 	
-	public Order (String code, Date date, String codeClient, String nitRestaurant, String status) {
+	public Order (String code, Date date, String codeClient, String nitRestaurant, String status){
 		this.code = code;
 		this.date = date;
 		this.codeClient = codeClient;
 		this.nitRestaurant = nitRestaurant;
-		productsAndQuantity = new String [2];
 		productsOrder = new ArrayList<String[]>();
 		this.status = status;
 	}
@@ -55,14 +53,6 @@ public class Order {
 		return nitRestaurant;
 	}
 	
-	public void setProductsAndQuantity(String [] productsAndQuantity) {
-		this.productsAndQuantity = productsAndQuantity;
-	}
-	
-	public String [] getProductsAndClient() {
-		return productsAndQuantity;
-	}
-	
 	public ArrayList<String[]> getProductsOrder(){
 		return productsOrder;
 	}
@@ -87,5 +77,38 @@ public class Order {
 	
 	public void addProducts(String[] productsToAdded) {
 		productsOrder.add(productsToAdded);
+	}
+
+	@Override
+	public int compareTo(Order otherOrder) {
+		int comp;
+		double num1 = Double.parseDouble(nitRestaurant);
+		double num2 = Double.parseDouble(otherOrder.getNitRestaurant());
+		if(num1>num2) {
+			comp = 1;
+		}else if(num1<num2) {
+			comp = -1;
+		}else {
+			comp = sortByDocumentClient(otherOrder);
+		}
+		return comp;
+	}
+	
+	private int sortByDocumentClient(Order otherOrder) {
+		int comp;
+		double num1 = Double.parseDouble(codeClient);
+		double num2 = Double.parseDouble(otherOrder.getCodeClient());
+		if(num1>num2) {
+			comp = -1;
+		}else if(num1<num2) {
+			comp = 1;
+		}else{
+			comp = sortByDate(otherOrder);
+		}
+		return comp;
+	}
+	
+	private int sortByDate(Order otherOrder) {
+		return 0;
 	}
 }
