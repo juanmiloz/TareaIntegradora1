@@ -1,7 +1,10 @@
 package model;
 
-public class Client implements Comparable<Client>{
+import java.io.Serializable;;
+
+public class Client implements Comparable<Client>, Serializable{
 	
+	private final static long serialVersionUID = 1; 
 	private String typeIdentification;
 	private String numberIdentification;
 	private String name;
@@ -80,7 +83,7 @@ public class Client implements Comparable<Client>{
 		String nom2 = client.getName();
 		comp = lastName.compareTo(nom);
 		if(comp == 0) {
-			name.compareTo(nom2);
+			comp = name.compareTo(nom2);
 		}
 		return comp;
 	}

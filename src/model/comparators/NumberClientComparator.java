@@ -12,9 +12,9 @@ public class NumberClientComparator implements Comparator<Client>{
 		double phoneC1 = Double.parseDouble(c1.getPhone()); 
 		double phoneC2 = Double.parseDouble(c2.getPhone());
 		if(phoneC1>phoneC2) {
-			comp = 1;
-		}else if(phoneC1<phoneC2) {
 			comp = -1;
+		}else if(phoneC1<phoneC2) {
+			comp = 1;
 		}else {
 			comp = 0;
 		}

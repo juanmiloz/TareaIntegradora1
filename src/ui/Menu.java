@@ -8,6 +8,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.IndexOutOfBoundsException;
 import exceptions.NitRestaurantNotExistException;
+import exceptions.NumClientInvalidException;
+import exceptions.NumProductsInvalidException;
+import exceptions.NumRestaurantInvalidException;
 import exceptions.NumberIdentificationNotExistException;
 import exceptions.StatusInvalidException;
 import exceptions.CodeProductNotExistException;
@@ -48,7 +51,8 @@ public class Menu {
 			System.out.println("(7)<---Buscar un cliente");
 			System.out.println("(8)<---Exportar registro de pedidos");
 			System.out.println("(9)<---Importar...");
-			System.out.println("(10)<---Cerrar programa");
+			System.out.println("(10)<---Mostrar Toda la Informacion(No hacia parte de la tarea)");
+			System.out.println("(11)<---Cerrar programa");
 			option = Integer.parseInt(in.nextLine());
 			
 			switch(option) {
@@ -105,10 +109,14 @@ public class Menu {
 			System.out.println("Ingrese el nombre del administrador");
 			String nameAdministrator = in.nextLine();
 			myFastFood.addNewRestaurant(nameRestaurant, nit, nameAdministrator);
+			myFastFood.saveDataRestaurants();
+			System.out.println("El restaurante se añadio en la lista y se guardo exitosamente");
 		}catch(InputMismatchException ime) {
 			System.err.println("Ingrese datos validos");
 		}catch(NitRestaurantExistException nre) {
 			System.err.println("El nit que ingreso ya existe en el sistema");
+		}catch(IOException ioe) {
+			System.err.println("Los datos no pueden ser cargados");
 		}
 	}
 	
@@ -130,6 +138,8 @@ public class Menu {
 				String nit = myFastFood.assignNit(numberRestaurant);
 				Product newProduct = new Product(codeProduct, nameProduct, description,cost,nit);
 				myFastFood.addNewProduct(numberRestaurant, newProduct);
+				myFastFood.saveDataRestaurants();
+				System.out.println("El producto fue añadido y guardado exitosamente al restaurante con numero de nit " + nit);
 			}
 		}catch(NumberFormatException nfe) {
 			System.err.println("Ingrese datos validos");
@@ -137,6 +147,9 @@ public class Menu {
 			System.err.println("El restaurante que ingreso no existe");
 		}catch(CodeProductExistException cpe) {
 			System.err.println("El codigo del producto que ingreso ya existe");
+		}catch(IOException ioe) {
+			System.err.println("Los datos no pueden ser cargados"); 
+			ioe.printStackTrace();
 		}
 	}
 	
@@ -168,10 +181,14 @@ public class Menu {
 			System.out.println("Ingrese la direccion");
 			String address = in.nextLine();
 			myFastFood.addNewClient(document, numberIdentification, name, lastName , phone, address);
+			myFastFood.saveDataClients();
+			System.out.println("El cliente fue añadido y guardado exitosamente");
 		}catch(NumberFormatException nfe) {
 			System.err.println("Ingrese valores validos porfavor");
 		}catch(NumberIdentificationNotExistException nine) {
 			System.err.println("El numero de identificacion ya esta registrado con otro cliente");
+		}catch(IOException ioe) {
+			System.err.println("Los datos no pueden ser cargados");
 		}
 	}
 	
@@ -183,50 +200,64 @@ public class Menu {
 			numero = String.valueOf(numRam);
 			repeat = myFastFood.codeValid(numero);
 			System.out.println("El codigo de la orden es: " + numero);
-			repeat = false;
 		}while(repeat);
 		Date date = new java.util.Date();
 		System.out.println("la fecha de la orden es: " + date);
-		if(!myFastFood.getClients().isEmpty()) {
-			String infoClient = myFastFood.getInfoClients();
-			System.out.println(infoClient);
-			System.out.println("Ingrese el numero del cliente que desea desarrollar la orden?");
-			int posIdClient = Integer.parseInt(in.nextLine());
-			String idClient = myFastFood.assingIdentificationClientToOrder(posIdClient);
-			if(!myFastFood.getRestaurants().isEmpty()) {
-				String infoRestaurants = myFastFood.getInfoRestaurants();
-				System.out.println(infoRestaurants);
-				System.out.println("Ingrese el numero del restaurante al que hara la orden");
-				int posNitRestaurant = Integer.parseInt(in.nextLine());
-				String nitRestaurant = myFastFood.assingNitRestaurantToOrder(posNitRestaurant);
-				continueOrder(numero,date,idClient,nitRestaurant,posNitRestaurant);
+		try {
+			if(!myFastFood.getClients().isEmpty()) {
+				String infoClient = myFastFood.getInfoClients();
+				System.out.println(infoClient);
+				System.out.println("Ingrese el numero del cliente que desea desarrollar la orden?");
+				int posIdClient = Integer.parseInt(in.nextLine());
+				String idClient = myFastFood.assingIdentificationClientToOrder(posIdClient);
+				if(!myFastFood.getRestaurants().isEmpty()) {
+					String infoRestaurants = myFastFood.getInfoRestaurants();
+					System.out.println(infoRestaurants);
+					System.out.println("Ingrese el numero del restaurante al que hara la orden");
+					int posNitRestaurant = Integer.parseInt(in.nextLine());
+					String nitRestaurant = myFastFood.assingNitRestaurantToOrder(posNitRestaurant);
+					continueOrder(numero,date,idClient,nitRestaurant,posNitRestaurant);
+				}else {
+					System.out.println("No hay restaurantes ingresados");
+				}
 			}else {
-				System.out.println("No hay restaurantes ingresados");
+				System.out.println("No hay clientes ingresados");
 			}
-		}else {
-			System.out.println("No hay clientes ingresados");
+		}catch(NumClientInvalidException ncie) {
+			System.err.println("El cliente que intento elegir no existe");
+		}catch(NumRestaurantInvalidException nrie) {
+			System.err.println("El restaurante que intento elegir no existe");
 		}
 	}
 	
 	public void continueOrder(String numRamdom, Date date, String idClient, String nitRestaurant, int x) {
-		if(!myFastFood.getRestaurants().get(x-1).getProducts().isEmpty()) {
-			String infoProducts = myFastFood.getInfoProductsOfRestaurant(x);
-			System.out.println(infoProducts);
-			System.out.println("Cuantos productos diferentes desea llevar");
-			int numOfProductsToOrder = Integer.parseInt(in.nextLine());
-			String status = "SOLICITADO";
-			myFastFood.addNewOrder(numRamdom, date, idClient, nitRestaurant, status);
-			for(int i = 0; i < numOfProductsToOrder; i++) {
-				System.out.println("Ingrese el numero del producto el cual desea llevar");
-				int numProduct = Integer.parseInt(in.nextLine());
-				String nameProduct = myFastFood.assingNameProductToOrder(x, numProduct);
-				System.out.println("Ingrese la cantidad de unidades que desea llevar");
-				int quantity = Integer.parseInt(in.nextLine());
-				String quantityToOrder = String.valueOf(quantity);
-				myFastFood.addProductsToOrder(numRamdom, nameProduct, quantityToOrder);
+		try {
+			if(!myFastFood.getRestaurants().get(x-1).getProducts().isEmpty()) {
+				String infoProducts = myFastFood.getInfoProductsOfRestaurant(x);
+				System.out.println(infoProducts);
+				System.out.println("Cuantos productos diferentes desea llevar?");
+				int numOfProductsToOrder = Integer.parseInt(in.nextLine());
+				myFastFood.confirmNumberProducts(nitRestaurant, numOfProductsToOrder);
+				String status = "SOLICITADO";
+				myFastFood.addNewOrder(numRamdom, date, idClient, nitRestaurant, status);
+				for(int i = 0; i < numOfProductsToOrder; i++) {
+					System.out.println("Ingrese el numero del producto el cual desea llevar");
+					int numProduct = Integer.parseInt(in.nextLine());
+					String nameProduct = myFastFood.assingNameProductToOrder(x, numProduct);
+					System.out.println("Ingrese la cantidad de unidades que desea llevar");
+					int quantity = Integer.parseInt(in.nextLine());
+					String quantityToOrder = String.valueOf(quantity);
+					myFastFood.addProductsToOrder(numRamdom, nameProduct, quantityToOrder);
+				}
+				myFastFood.saveDataOrders();
+				System.out.println("La orden fue añadida y guardada exitosamente");
+			}else {
+				System.out.println("No hay productos ingresados");
 			}
-		}else {
-			System.out.println("No hay productos ingresados");
+		}catch(NumProductsInvalidException npie) {
+			System.err.println("El numero de productos diferentes que desea llevar excede la cantidad de productos que tiene el restaurante");
+		}catch(IOException ioe) {
+			System.err.println("Los datos no pueden ser cargados");
 		}
 	}
 	
@@ -512,19 +543,23 @@ public class Menu {
 	}
 	
 	public void upgrateStatusOrder() {
-		String infoOrder = myFastFood.getInfoOrder();
-		System.out.println(infoOrder + "\nA que numero de orden le desea actualizar el estatus");
-		int numOrder = Integer.parseInt(in.nextLine());
-		System.out.println("A que estatus desea actualizar la orden?\n(1)EN PROCESO\n(2)ENVIADO\n(3)ENTREGADO");
-		int numNewStatus = Integer.parseInt(in.nextLine());
-		try {
-			myFastFood.upgradeStatus(numOrder, numNewStatus);
-		}catch(StatusInvalidException sie) {
-			System.err.println("El estado que intenta introducir es menor al actual");
-		}catch(EqualsStatusException ese) {
-			System.err.println("El estado que intenta introducir es el mismo que el actual");
-		}catch(IndexOutOfBoundsException ipobe) {
-			System.err.println("El numero de orden que ingreso no existe");
+		if(!myFastFood.getOrder().isEmpty()) {
+			String infoOrder = myFastFood.getInfoOrder();
+			System.out.println(infoOrder + "\nA que numero de orden le desea actualizar el estatus");
+			int numOrder = Integer.parseInt(in.nextLine());
+			System.out.println("A que estatus desea actualizar la orden?\n(1)EN PROCESO\n(2)ENVIADO\n(3)ENTREGADO");
+			int numNewStatus = Integer.parseInt(in.nextLine());
+			try {
+				myFastFood.upgradeStatus(numOrder, numNewStatus);
+			}catch(StatusInvalidException sie) {
+				System.err.println("El estado que intenta introducir es menor al actual");
+			}catch(EqualsStatusException ese) {
+				System.err.println("El estado que intenta introducir es el mismo que el actual");
+			}catch(IndexOutOfBoundsException ipobe) {
+				System.err.println("El numero de orden que ingreso no existe");
+			}
+		}else {
+			System.out.println("No hay ordenes ingresadas al sistema");
 		}
 	}
 	
@@ -539,7 +574,6 @@ public class Menu {
 		switch(optionVisualize) {
 			case 1:
 				visualizeRestaurants();
-				System.out.println("Salio");
 			break;
 			
 			case 2:
@@ -594,7 +628,7 @@ public class Menu {
 		System.out.println("================================");
 		System.out.println("Que desea importar?");
 		System.out.println("(1)<---importar datos de restaurantes");
-		System.out.println("(2)<---importar datos de productos");
+		System.out.println("(2)<---importar datos de productos(primero debe importar los restaurantes)");
 		System.out.println("(3)<---importar datos de clientes");
 		System.out.println("(4)<---importar datos de ordenes");
 		int optionImport = Integer.parseInt(in.nextLine());
@@ -603,13 +637,13 @@ public class Menu {
 				importRestaurants();
 			break;
 			case 2:
-				
+				importProducts();
 			break;
 			case 3:
 				importClients();
 			break;
 			case 4:
-				
+				importOrders();
 			break;
 			default:
 				System.out.println("Ingrese una opcion valida");
@@ -618,30 +652,74 @@ public class Menu {
 	}
 	
 	public void importRestaurants(){
+		String messageError = null;
 		System.out.println("Importando datos....");
 		try {
-			myFastFood.importDataRestaurants();
+			messageError = myFastFood.importDataRestaurants();
 			System.out.println("Datos importados exitosamente");
 		}catch(IOException ioe){
 			System.err.println("Los datos no se pudieron importar");	
+		}
+		if(!messageError.equalsIgnoreCase("")) {
+			System.err.println(messageError);
+		}
+	}
+	
+	public void importProducts() {
+		String messageError = ""; 
+		System.out.println("importando datos");
+		try {
+			if(!myFastFood.getRestaurants().isEmpty()) {
+				myFastFood.importDataProducts();
+				System.out.println("Datos importados exitosamente");
+			}else {
+				System.err.println("No hay restaurantes donde ingresar los productos");
+			}
+		}catch(IOException ioe) {
+			System.err.println("Los datos no se pudieron importar");
+		}
+		if(!messageError.equalsIgnoreCase("")) {
+			System.err.println(messageError);
 		}
 	}
 	
 	public void importClients(){
+		String messageError = null;
 		System.out.println("Importando datos....");
 		try {
-			myFastFood.importDataClients();
+			messageError = myFastFood.importDataClients();
 			System.out.println("Datos importados exitosamente");
 		}catch(IOException ioe){
 			System.err.println("Los datos no se pudieron importar");	
 		}
+		if(!messageError.equalsIgnoreCase("")) {
+			System.err.println(messageError);
+		}
+	}
+	
+	public void importOrders(){
+		String messageError = "";
+		System.out.println("Importando datos....");
+		try {
+			messageError = myFastFood.importDataOrders();
+			System.out.println("Datos importados exitosamente");
+		}catch(IOException ioe){
+			System.err.println("Los datos no se pudieron importar");	
+		}
+		if(!messageError.equalsIgnoreCase("")) {
+			System.err.println(messageError);
+		}
 	}
 	
 	public void startProgram() {
+		try {
+			myFastFood.loadDataMyFastFood();
+		}catch(IOException | ClassNotFoundException cnfe) {
+			System.err.println("No se pudo descargar los datos");
+		}
 		menuPrincipal();
 	}
 	
-	/*probar que todo este bien*/
 	public void mostrarTodo() {
 		String todaInfo;
 		todaInfo = myFastFood.getInfoRestaurantsAndProducts();

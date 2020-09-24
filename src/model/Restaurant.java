@@ -1,9 +1,11 @@
 package model;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.Serializable;
 
-public class Restaurant implements Comparable<Restaurant>{
+public class Restaurant implements Comparable<Restaurant>, Serializable{
 	
+	public final static long serialVersionUID = 1;
 	private String name;
 	private String nit;
 	private String nameAdministrator;

@@ -7,19 +7,30 @@ import exceptions.NitRestaurantExistException;
 import exceptions.CodeProductExistException;
 import java.util.Random;
 import exceptions.NitRestaurantNotExistException;
+import exceptions.NumClientInvalidException;
+import exceptions.NumProductsInvalidException;
+import exceptions.NumRestaurantInvalidException;
 import exceptions.NumberIdentificationNotExistException;
 import exceptions.StatusInvalidException;
 import model.comparators.NumberClientComparator;
 import exceptions.CodeProductNotExistException;
 import exceptions.DocumentClientNotExistException;
 import exceptions.EqualsStatusException;
+import exceptions.CodeOrderExistException;
 import exceptions.CodeOrderNotExistException;
 import exceptions.NameClientNotExistException;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
+
 
 public class MyFastFood{
 	
@@ -27,7 +38,10 @@ public class MyFastFood{
 	private final static String FILE_DATA_RESTAURANT = "data/dataRestaurants.csv";
 	private final static String FILE_DATA_PRODUCTS = "data/dataProducts.csv";
 	private final static String FILE_DATA_CLIENTS = "data/dataClients.csv";
-	private final static String FILE_DATA_ORDER = "data/dataOrder.csv";
+	private final static String FILE_DATA_ORDERS = "data/dataOrder.csv";
+	private final static String FILE_SERIALIZABLE_RESTAURANT = "data/seriarizableRestaurants.ap2";
+	private final static String FILE_SERIALIZABLE_CLIENTS = "data/seriarizableClients.ap2";
+	private final static String FILE_SERIALIZABLE_ORDERS = "data/seriarizableOrders.ap2";
 	private ArrayList<Restaurant> restaurants;
 	private ArrayList<Client> clients;
 	private ArrayList<Order> orders;
@@ -154,6 +168,19 @@ public class MyFastFood{
 		}
 	}
 	
+	public void saveDataRestaurants() throws IOException {
+		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_SERIALIZABLE_RESTAURANT));
+		oos.writeObject(restaurants);
+		oos.close();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void loadDataRestaurant() throws IOException, ClassNotFoundException{	
+		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_SERIALIZABLE_RESTAURANT));
+		restaurants = (ArrayList<Restaurant>)ois.readObject();
+		ois.close();
+	}
+	
 	public void addNewProduct(int numRestaurant, Product newProduct) {
 		restaurants.get(numRestaurant-1).addProduct(newProduct);
 	}
@@ -176,16 +203,52 @@ public class MyFastFood{
 			clients.add(newClient);
 		}else {
 			int i = 0;
-			while(clients.get(i).compareTo(newClient) > 0) {
+			while(i<clients.size() && newClient.compareTo(clients.get(i))<0 ) {
 				i++;
 			}
 			clients.add(i, newClient);
 		}
 	}
 	
+	public void saveDataClients() throws IOException {
+		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_SERIALIZABLE_CLIENTS));
+		oos.writeObject(clients);
+		oos.close();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void loadDataClients() throws IOException, ClassNotFoundException{	
+		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_SERIALIZABLE_CLIENTS));
+		clients = (ArrayList<Client>)ois.readObject();
+		ois.close();
+	}
+	
 	public void addNewOrder(String code, Date date, String codeClient, String nitRestaurant, String status) {
 		Order newOrder = new Order(code,date,codeClient,nitRestaurant,status);
 		orders.add(newOrder);
+	}
+	
+	public void saveDataOrders() throws IOException {
+		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_SERIALIZABLE_ORDERS));
+		oos.writeObject(orders);
+		oos.close();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void loadDataOrder() throws IOException, ClassNotFoundException{	
+		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_SERIALIZABLE_ORDERS));
+		orders = (ArrayList<Order>)ois.readObject();
+		ois.close();
+	}
+	
+	public void confirmNumberProducts(String nitRestaurant, int numProducts) throws NumProductsInvalidException{
+		for(int i = 0; i<restaurants.size(); i++) {
+			if(restaurants.get(i).getNit().equalsIgnoreCase(nitRestaurant)) {
+				if(numProducts>restaurants.get(i).getProducts().size()) {
+					throw new NumProductsInvalidException();
+				}
+			}
+		}
 	}
 	
 	public String assignDocument(int numberTypeDocument) {
@@ -214,8 +277,13 @@ public class MyFastFood{
 		return randomNumber;
 	}
 	
-	public String assingIdentificationClientToOrder(int num) {
-		String numIdentification = clients.get(num-1).getNumberIdentification();
+	public String assingIdentificationClientToOrder(int num) throws NumClientInvalidException{
+		String numIdentification = null;
+		if(num <= clients.size()) {
+			numIdentification = clients.get(num-1).getNumberIdentification();
+		}else {
+			throw new NumClientInvalidException();
+		}
 		return numIdentification;
 	}
 	
@@ -235,8 +303,13 @@ public class MyFastFood{
 		return repeat;
 	}
 	
-	public String assingNitRestaurantToOrder(int num) {
-		String nitRestaurant = restaurants.get(num-1).getNit();
+	public String assingNitRestaurantToOrder(int num) throws NumRestaurantInvalidException{
+		String nitRestaurant = null;
+		if(num <= restaurants.size()) {
+			nitRestaurant = restaurants.get(num-1).getNit();
+		}else {
+			throw new NumRestaurantInvalidException();
+		}
 		return nitRestaurant;
 	}
 	
@@ -427,9 +500,22 @@ public class MyFastFood{
 	public String searchName(String name) {
 		String infoName = "";
 		name = name.trim();
-		for(int i = 0; i<clients.size();i++) {
-			if(clients.get(i).getName().trim().equalsIgnoreCase(name)) {
-				infoName += clients.get(i).toString();
+		name = name.toLowerCase();
+		boolean exist = false;
+		int start = 0;
+		int end = clients.size()-1;
+		
+		while(start <= end && !exist) { 
+			int medium = (start+end)/2;
+			String otherName = clients.get(medium).getName();
+			otherName = otherName.toLowerCase();
+			if(name.compareTo(otherName) == 0) {
+				exist = true;
+				infoName = clients.get(medium).toString();
+			}else if(name.compareTo(otherName) < 0) {
+				start = medium+1;
+			}else {
+				end = medium-1;
 			}
 		}
 		return infoName;
@@ -454,9 +540,10 @@ public class MyFastFood{
 		pw.close();
 	}
 	
-	public void importDataRestaurants() throws IOException{
+	public String importDataRestaurants() throws IOException{
 		BufferedReader br = new BufferedReader(new FileReader(FILE_DATA_RESTAURANT));
 		String line = br.readLine();
+		String message = "";
 		int cont = -1;
 		while(line != null) {
 			String [] partsLine = line.split(",");
@@ -467,16 +554,35 @@ public class MyFastFood{
 				}
 				addNewRestaurant(partsLine[0], partsLine[1], partsLine[2]);
 			}catch(NitRestaurantExistException nre) {
-				System.err.println("El nit del restaurante en la fila " + cont + " ya existe en el sistema");
+				message += "El nit del restaurante en la fila " + cont + " ya existe en el sistema\n";
+			}
+			line = br.readLine();
+		}
+		br.close();
+		return message;
+	}
+	
+	public void importDataProducts() throws IOException{
+		BufferedReader br = new BufferedReader(new FileReader(FILE_DATA_PRODUCTS));
+		String line = br.readLine();
+		while(line != null) {
+			String [] partsLine = line.split(",");
+			double cost = Double.parseDouble(partsLine[3]);
+			Product newProduct = new Product(partsLine[0],partsLine[1],partsLine[2],cost,partsLine[4]);
+			for(int i = 0; i < restaurants.size();i++) {
+				if(restaurants.get(i).getNit().equalsIgnoreCase(partsLine[4])) {
+					restaurants.get(i).addProduct(newProduct);
+				}
 			}
 			line = br.readLine();
 		}
 		br.close();
 	}
 	
-	public void importDataClients() throws IOException{
+	public String importDataClients() throws IOException{
 		BufferedReader br = new BufferedReader(new FileReader(FILE_DATA_CLIENTS));
 		String line = br.readLine();
+		String message = "";
 		int cont = -1;
 		while(line != null) {
 			String [] partsLine = line.split(",");
@@ -487,10 +593,64 @@ public class MyFastFood{
 				}
 				addNewClient(partsLine[0], partsLine[1], partsLine[2], partsLine[3], partsLine[4], partsLine[5]);
 			}catch(NumberIdentificationNotExistException nine) {
-				System.err.println("El numero de identificacion del cliente en la fila " + cont + " ya existe en el sistema");
+				message += "El numero de identificacion del cliente en la fila " + cont + " ya existe en el sistema";
 			}
 			line = br.readLine();
 		}
 		br.close();
+		return message;
+	}
+	
+	public void confirmNotExistOrder(String codeOrder) throws CodeOrderExistException{
+		boolean exist = false;
+		for(int i = 0; i<orders.size(); i++) {
+			if(orders.get(i).getCode().equalsIgnoreCase(codeOrder)) {
+				exist = true;
+			}
+			if(exist) {
+				throw new CodeOrderExistException();
+			}
+		}
+	}
+	
+	private Date ParseFecha(String fecha){
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+        Date fechaDate = null;
+        try {
+            fechaDate = formato.parse(fecha);
+        } catch (ParseException ex){
+            fechaDate = null;
+        }
+        return fechaDate;
+    }
+	
+	public String importDataOrders() throws IOException{
+		BufferedReader br = new BufferedReader(new FileReader(FILE_DATA_ORDERS));
+		String line = br.readLine();
+		String message = "";
+		int cont = -1;
+		while(line != null) {
+			String [] partsLine = line.split(",");
+			cont += 1;
+			try {
+				if(!orders.isEmpty()) {
+					confirmNotExistOrder(partsLine[1]);
+				}
+				Date date = ParseFecha(partsLine[1]);
+				addNewOrder(partsLine[0], date, partsLine[2], partsLine[3], partsLine[6]);
+				addProductsToOrder(partsLine[0], partsLine[4], partsLine[5]);
+			}catch(CodeOrderExistException coe) {
+				message += "El numero de orden en la fila " + cont + " ya existe en el sistema";
+			}
+			line = br.readLine();
+		}
+		br.close();
+		return message;
+	}
+	
+	public void loadDataMyFastFood() throws ClassNotFoundException, IOException {	
+		loadDataRestaurant();
+		loadDataClients();
+		loadDataClients();
 	}
 }
