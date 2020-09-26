@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.lang.IndexOutOfBoundsException;
 import exceptions.NitRestaurantNotExistException;
 import exceptions.NumClientInvalidException;
+import exceptions.NumProductNotExist;
 import exceptions.NumProductsInvalidException;
 import exceptions.NumRestaurantInvalidException;
 import exceptions.NumberIdentificationNotExistException;
@@ -35,6 +36,10 @@ public class Menu {
 	private Scanner in = new Scanner(System.in);
 	private MyFastFood myFastFood = new MyFastFood();
 	
+	/*
+	name: menuPrincipal
+	show the principal menu
+	*/
 	public void menuPrincipal() {
 		int option;
 		do {
@@ -93,12 +98,16 @@ public class Menu {
 				break;
 				
 				case 10:
-					mostrarTodo();
+					showAll();
 				break;
 			}
-		}while(option != 11 && option <= 11);
+		}while( option < 11);
 	}
 	
+	/*
+	name: newRestaurant
+	register a new restaurant
+	*/
 	public void newRestaurant() {
 		try{
 			System.out.println("\nIngrese el nombre del restaurante");
@@ -120,6 +129,10 @@ public class Menu {
 		}
 	}
 	
+	/*
+	name: newProduct
+	register a new product
+	*/
 	public void newProduct() {
 		try{
 			System.out.println("Ingrese el codigo del producto");
@@ -153,6 +166,10 @@ public class Menu {
 		}
 	}
 	
+	/*
+	name: newClient
+	register a new client
+	*/
 	public void newClient() {
 		boolean repeat;
 		String document = "";
@@ -192,6 +209,10 @@ public class Menu {
 		}
 	}
 	
+	/*
+	name: newOrder
+	ask for some information for an order
+	*/
 	public void newOrder() {
 		boolean repeat = true;
 		String numero;
@@ -230,6 +251,10 @@ public class Menu {
 		}
 	}
 	
+	/*
+	name: continueOrder 
+	register a new order
+	*/
 	public void continueOrder(String numRamdom, Date date, String idClient, String nitRestaurant, int x) {
 		try {
 			if(!myFastFood.getRestaurants().get(x-1).getProducts().isEmpty()) {
@@ -243,6 +268,7 @@ public class Menu {
 				for(int i = 0; i < numOfProductsToOrder; i++) {
 					System.out.println("Ingrese el numero del producto el cual desea llevar");
 					int numProduct = Integer.parseInt(in.nextLine());
+					myFastFood.confirmProductNotExist(nitRestaurant, numProduct);
 					String nameProduct = myFastFood.assingNameProductToOrder(x, numProduct);
 					System.out.println("Ingrese la cantidad de unidades que desea llevar");
 					int quantity = Integer.parseInt(in.nextLine());
@@ -258,9 +284,15 @@ public class Menu {
 			System.err.println("El numero de productos diferentes que desea llevar excede la cantidad de productos que tiene el restaurante");
 		}catch(IOException ioe) {
 			System.err.println("Los datos no pueden ser cargados");
+		}catch(NumProductNotExist npne) {
+			System.err.println("El numero de producto que ingreso no es valido");
 		}
 	}
 	
+	/*
+	name: newActualization
+	show the menu of actualizations
+	*/
 	public void newActualization() {
 		System.out.println("\n");
 		System.out.println("=========================");
@@ -296,6 +328,10 @@ public class Menu {
 		}
 	}
 	
+	/*
+	name: upgrateDataRestaurant
+	show the submenu of actualization of restaurant
+	*/
 	public void upgrateDataRestaurant() {
 		try {
 			if(!myFastFood.getInfoRestaurants().isEmpty()) {
@@ -328,18 +364,30 @@ public class Menu {
 		}	
 	}
 	
+	/*
+	name: upgrateNameRestaurant
+	allows actualized the name of restaurant
+	*/
 	public void upgrateNameRestaurant(int posRestaurant) {
 		System.out.println("Ingrese el nuevo nombre del restaurante");
 		String newName = in.nextLine();
 		myFastFood.getRestaurants().get(posRestaurant).setName(newName);
 	}
 	
+	/*
+	name: upgrateNameAdministraitorRestaurant
+	allows actualized the name of administraitor of restaurant
+	*/
 	public void upgrateNameAdministratorRestaurant(int posRestaurant) {
 		System.out.println("Ingrese el nuevo nombre del administrador del restaurante");
 		String newNameAdministrator = in.nextLine();
 		myFastFood.getRestaurants().get(posRestaurant).setNameAdministraitor(newNameAdministrator);
 	}
 	
+	/*
+	name: upgrateDataProduct
+	show the submenu of actualization of product
+	*/
 	public void upgrateDataProduct() {
 		try{
 			if(myFastFood.productsEmpty()) {
@@ -382,24 +430,40 @@ public class Menu {
 		}
 	}
 	
+	/*
+	name: upgrateNameProduct
+	allows actualized the name of product
+	*/
 	public void upgrateNameProduct(int posProduct, int numRestaurant) {
 		System.out.println("Ingrese el nuevo nombre del producto");
 		String newNameProduct = in.nextLine();
 		myFastFood.getRestaurants().get(numRestaurant).getProducts().get(posProduct).setName(newNameProduct);
 	}
 	
+	/*
+	name: upgrateDescription
+	allows actualized the description of product
+	*/
 	public void upgrateDescriptionProduct(int posProduct, int numRestaurant) {
 		System.out.println("Ingrese la nueva descripcion del producto");
 		String newDescriptionProduct = in.nextLine();
 		myFastFood.getRestaurants().get(numRestaurant).getProducts().get(posProduct).setDescription(newDescriptionProduct);
 	}
 	
+	/*
+	name: upgrateCostproduct
+	allows actualized the cost of product
+	*/
 	public void upgrateCostProduct(int posProduct, int numRestaurant) {
 		System.out.println("Ingrese el nuevo costo del producto");
 		Double newCost = Double.parseDouble(in.nextLine());
 		myFastFood.getRestaurants().get(numRestaurant).getProducts().get(posProduct).setCost(newCost);;
 	}
 	
+	/*
+	name: upgrateDataClient
+	show the submenu of actualization of clients
+	*/
 	public void upgrateDataClient() {
 		try{
 			if(!myFastFood.getClients().isEmpty()) {
@@ -444,6 +508,10 @@ public class Menu {
 		}
 	}
 	
+	/*
+	name: upgrateTypeIdentificationClient
+	allows actualized the type identification of the client
+	*/
 	public void upgrateTypeIdentificationClient(int posClient) {
 		System.out.println("Ingrese el nuevo tipo de identificacion");
 		System.out.println("1<---Tarjeta de Identidad\n2<---Cedula Ciudadania\n3<---Pasaporte\n4<---Cedula Extranjera\n");
@@ -452,30 +520,50 @@ public class Menu {
 		myFastFood.getClients().get(posClient).setTypeIdentification(document);
 	}
 	
+	/*
+	name: upgrateNameClient
+	allows actualized the name of the client
+	*/
 	public void upgrateNameClient(int posClient) {
 		System.out.println("Ingrese el nuevo nombre del cliente");
 		String newName = in.nextLine();
 		myFastFood.getClients().get(posClient).setName(newName);
 	}
 	
+	/*
+	name: upgrateApellidoClient
+	allows actualized the last name of the client
+	*/
 	public void upgrateApellidoClient(int posClient) {
 		System.out.println("Ingrese el nuevo apellido del cliente");
 		String newLastName = in.nextLine();
 		myFastFood.getClients().get(posClient).setLastName(newLastName);
 	}
 	
+	/*
+	name: upgratePhone
+	allows actualized the phone of the client
+	*/
 	public void upgratePhoneClient(int posClient) {
 		System.out.println("Ingrese el nuevo numero de telefono");
 		String newPhone = in.nextLine();
 		myFastFood.getClients().get(posClient).setPhone(newPhone);
 	}
 	
+	/*
+	name: upgrateAddresClient 
+	allows actualized the addres of the client
+	*/
 	public void upgrateAdressClient(int posClient) {
 		System.out.println("Ingrese la nueva direccion");
 		String newAdress = in.nextLine();
 		myFastFood.getClients().get(posClient).setAdress(newAdress);
 	}
 	
+	/*
+	name: upgrateDataOrder
+	show the submenu of actualization of order
+	*/
 	public void upgrateDataOrder() {
 		try{
 			if(!myFastFood.getOrder().isEmpty()) {
@@ -512,12 +600,20 @@ public class Menu {
 		}
 	}
 	
+	/*
+	name: upgrateDate
+	allows actualized the date of the order
+	*/
 	public void upgrateDate(int posOrder) {
 		Date newDate = new java.util.Date();
 		myFastFood.getOrder().get(posOrder).setDate(newDate);
 		System.out.println("La nueva fecha es"+ newDate);
 	}
 	
+	/*
+	name: upgrateCodeClient
+	allows actualized the code client of the order
+	*/
 	public void upgrateCodeClient(int posOrder) {
 		try {
 			String infoClients = myFastFood.getInfoClients();
@@ -530,6 +626,10 @@ public class Menu {
 		}
 	}
 	
+	/*
+	name: upgrateNitRestaurant
+	allows actualized the nit restaurant of the order
+	*/
 	public void upgrateNitRestaurant(int posOrder) {
 		try {
 			String infoRestaurant = myFastFood.getInfoRestaurants();
@@ -542,6 +642,10 @@ public class Menu {
 		}
 	}
 	
+	/*
+	name: upgrateStatusOrder
+	allows actualized the status of the order
+	*/
 	public void upgrateStatusOrder() {
 		if(!myFastFood.getOrder().isEmpty()) {
 			String infoOrder = myFastFood.getInfoOrder();
@@ -563,6 +667,10 @@ public class Menu {
 		}
 	}
 	
+	/*
+	name: visualize
+	allows show the menu of visualizations
+	*/
 	public void visualize() {
 		System.out.println("=========================");
 		System.out.println("|MENU DE VISUALIZACIONES|");
@@ -586,16 +694,28 @@ public class Menu {
 		}
 	}
 	
+	/*
+	name: visualizeRestaurants
+	allows show the restaurants in order
+	*/
 	public void visualizeRestaurants() {
 		String infoOrganizedRestaurants = myFastFood.getRestaurantsInOrden();
 		System.out.println(infoOrganizedRestaurants);
 	}
 	
+	/*
+	name: visualizeClients
+	allows show the clients in order
+	*/
 	public void visualizeClients() {
 		String infoOrganizedClients = myFastFood.getClientsInOrden();
 		System.out.println(infoOrganizedClients);
 	}
 	
+	/*
+	name: searchClient
+	allows search a client whit your name
+	*/
 	public void searchClient() {
 		System.out.println("Ingrese el nombre del cliente que desea buscar");
 		String name = in.nextLine();
@@ -611,6 +731,10 @@ public class Menu {
 		}
 	}
 	
+	/*
+	name: exportOrdersReport
+	allows export data of orders
+	*/
 	public void exportOrdesReport() {
 		try {
 			System.out.println("Cual es el separador que utilizara?");
@@ -622,6 +746,10 @@ public class Menu {
 		}
 	}
 	
+	/*
+	name: importData
+	allows show the menu of import.
+	*/
 	public void importData() {
 		System.out.println("================================");
 		System.out.println("|MENU DE IMPORTACIONES DE DATOS|");
@@ -651,6 +779,10 @@ public class Menu {
 		}
 	}
 	
+	/*
+	name: importRestaurant
+	allows import data of restaurants
+	*/
 	public void importRestaurants(){
 		String messageError = null;
 		System.out.println("Importando datos....");
@@ -665,6 +797,10 @@ public class Menu {
 		}
 	}
 	
+	/*
+	name: importProducts
+	allows import data of products
+	*/
 	public void importProducts() {
 		String messageError = ""; 
 		System.out.println("importando datos");
@@ -683,6 +819,10 @@ public class Menu {
 		}
 	}
 	
+	/*
+	name: importClients
+	allows import data of clients
+	*/
 	public void importClients(){
 		String messageError = null;
 		System.out.println("Importando datos....");
@@ -697,6 +837,10 @@ public class Menu {
 		}
 	}
 	
+	/*
+	name: importOrders
+	allows import data of orders
+	*/
 	public void importOrders(){
 		String messageError = "";
 		System.out.println("Importando datos....");
@@ -711,6 +855,10 @@ public class Menu {
 		}
 	}
 	
+	/*
+	name: startProgram
+	allows inicialized program
+	*/
 	public void startProgram() {
 		try {
 			myFastFood.loadDataMyFastFood();
@@ -720,7 +868,11 @@ public class Menu {
 		menuPrincipal();
 	}
 	
-	public void mostrarTodo() {
+	/*
+//	name: showAll 
+	allows show all information of restaurants, products, clients and orders.
+	*/
+	public void showAll() {
 		String todaInfo;
 		todaInfo = myFastFood.getInfoRestaurantsAndProducts();
 		todaInfo += "\n" + myFastFood.getInfoClients();

@@ -1,4 +1,1 @@
-Codigo orden;Fecha;Numero documento cliente;Nit restaurante;Nombre producto;Cantidad producto;estatus orden
-403725;Tue Sep 22 19:24:02 COT 2020;9384756345;29434;Corral callejera;1;SOLICITADO
-403725;Tue Sep 22 19:24:02 COT 2020;9384756345;29434;Corral Hawaiana;1;SOLICITADO
-403725;Tue Sep 22 19:24:02 COT 2020;9384756345;29434;Corral Hawaiana;1;SOLICITADO
+Codigo orden.Fecha.Numero documento cliente.Nit restaurante.Nombre producto.Cantidad producto.estatus orden
