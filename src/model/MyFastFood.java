@@ -770,7 +770,7 @@ public class MyFastFood{
 	public void confirmExistName(String name) throws NameClientNotExistException{
 		boolean exist = false;
 		for(int i = 0; i<clients.size(); i++) {
-			if(clients.get(i).getName().equalsIgnoreCase(name)) {
+			if(clients.get(i).getLastName().equalsIgnoreCase(name)) {
 				exist = true;
 			}
 		}
@@ -788,23 +788,24 @@ public class MyFastFood{
 	*/
 	public String searchName(String name) {
 		String infoName = "";
-		name = name.trim();
-		name = name.toLowerCase();
 		boolean exist = false;
 		int start = 0;
 		int end = clients.size()-1;
+		name= name.trim();
+		name= name.toLowerCase();
 		
 		while(start <= end && !exist) { 
-			int medium = (start+end)/2;
-			String otherName = clients.get(medium).getName();
+			int medium = (int) Math.floor((start+end)/2);
+			String otherName = clients.get(medium).getLastName();
+			otherName = otherName.trim();
 			otherName = otherName.toLowerCase();
-			if(name.compareTo(otherName) == 0) {
+			if(name.compareToIgnoreCase(otherName) == 0) {
 				exist = true;
 				infoName = clients.get(medium).toString();
 			}else if(name.compareTo(otherName) < 0) {
 				start = medium+1;
-			}else if(name.compareTo(otherName) > 0){
-				end = medium-1;
+			}else {
+				end = medium-1;				
 			}
 		}
 		return infoName;

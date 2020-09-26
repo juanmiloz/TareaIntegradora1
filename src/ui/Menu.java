@@ -717,7 +717,7 @@ public class Menu {
 	allows search a client whit your name
 	*/
 	public void searchClient() {
-		System.out.println("Ingrese el nombre del cliente que desea buscar");
+		System.out.println("Ingrese el o los APELLIDOS del cliente que desea buscar");
 		String name = in.nextLine();
 		try {
 			long start = System.currentTimeMillis();
@@ -727,7 +727,7 @@ public class Menu {
 			System.out.println(infoClient);
 			System.out.println("El tiempo que tardo en encontrarlo fue: " + (finish-start));
 		}catch(NameClientNotExistException ncne) {
-			System.err.println("El nombre que ingreso no se encuentra registrado en el sistema");
+			System.err.println("El apellido que ingreso no se encuentra registrado en el sistema");
 		}
 	}
 	
